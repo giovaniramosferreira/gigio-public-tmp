@@ -2,7 +2,7 @@
 Interface Web FastAPI para o Promo Bot
 """
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -11,13 +11,14 @@ from loguru import logger
 from ..scheduler import JobScheduler
 from ..bot import TelegramBot
 from ..history import message_history
-from ..services import AmazonScraper
+from ..services import AmazonScraper, TrackingService
 from ..models import Promotion, Platform
 
 # Instâncias globais
 scheduler = JobScheduler()
 bot = TelegramBot()
 scraper = AmazonScraper()
+tracker = TrackingService()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -52,13 +53,33 @@ app.mount("/static", StaticFiles(directory="src/web/static"), name="static")
 async def read_index():
     return FileResponse("src/web/static/index.html")
 
+@app.get("/r/{code}")
+async def redirect_link(code: str):
+    """Redireciona link encurtado e registra clique"""
+    url = tracker.get_original_url(code)
+    if not url:
+        raise HTTPException(status_code=404, detail="Link não encontrado")
+    
+    # Registra clique
+    tracker.register_click(code)
+    
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url=url)
+
 @app.post("/send-manual")
-async def send_manual(msg: ManualMessage):
-    """Envia mensagem manual para o Telegram"""
-    if not msg.text:
+async def send_manual(
+    text: str = Form(...),
+    image: UploadFile = File(None)
+):
+    """Envia mensagem manual para o Telegram (com upload opcional)"""
+    if not text:
         raise HTTPException(status_code=400, detail="Mensagem vazia")
     
-    success = await bot.send_manual_message(msg.text)
+    image_bytes = None
+    if image:
+        image_bytes = await image.read()
+    
+    success = await bot.send_manual_message(text, image_bytes)
     if not success:
         raise HTTPException(status_code=500, detail="Falha ao enviar")
     return {"status": "sent"}
@@ -74,7 +95,15 @@ async def process_link(req: LinkRequest):
     if not promo:
         raise HTTPException(status_code=400, detail="Falha ao coletar dados do produto")
         
-    # 2. Envia para aprovação (Admin)
+    # 2. Gera link de rastreio
+    tracking_code = tracker.create_link(promo.affiliate_url, promo.title)
+    if tracking_code:
+        # Resolve a URL do servidor (poderia vir de config, mas vamos usar request host)
+        # Para facilitar, no telegram usamos o link relativo ou fixo da env
+        base_url = "http://localhost:8000" # TODO: Pegar de config/env se disponível
+        promo.affiliate_url = f"{base_url}/r/{tracking_code}"
+        
+    # 3. Envia para aprovação (Admin)
     success = await bot.send_preview(promo)
     
     if not success:
@@ -100,7 +129,18 @@ async def get_history(limit: int = 50):
 
 @app.get("/stats")
 async def get_stats():
-    return message_history.get_stats()
+    # Dados de mensagens
+    msg_stats = message_history.get_stats()
+    
+    # Dados de cliques
+    click_stats = {
+        "total_clicks": tracker.get_total_clicks(),
+        "today_clicks": tracker.get_today_clicks(),
+        "clicks_24h": tracker.get_clicks_last_24h(),
+        "top_links": tracker.get_top_links()
+    }
+    
+    return {**msg_stats, **click_stats}
 
 
 # ========== Queue Management ==========
@@ -194,6 +234,26 @@ async def send_welcome(req: WelcomeRequest):
     
     return {"status": "pinned", "message_id": result["message_id"]}
 
+
+@app.post("/upload-profile")
+async def upload_profile(file: UploadFile = File(...)):
+    """Upload de foto de perfil"""
+    import shutil
+    import os
+    
+    # Salva como profile.png na pasta estática
+    # O caminho deve ser relativo à raiz do app (/app)
+    file_location = "src/web/static/profile.png"
+    
+    try:
+        os.makedirs(os.path.dirname(file_location), exist_ok=True)
+        with open(file_location, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+    except Exception as e:
+        logger.error(f"Erro ao salvar perfil: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao salvar arquivo")
+        
+    return {"status": "success", "url": "/static/profile.png"}
 
 # ========== Settings Management ==========
 

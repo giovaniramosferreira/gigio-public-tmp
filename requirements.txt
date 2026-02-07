@@ -13,7 +13,7 @@ pydantic-settings==2.1.0
 # Web Scraping (para ML)
 selectolax==0.3.21
 httpx[http2]
-
+python-multipart
 # Utils
 python-dotenv==1.0.0
 loguru==0.7.2

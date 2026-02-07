@@ -171,25 +171,40 @@ class TelegramBot:
         
         try:
             await query.delete_message()
-            message_history.add("Promoção Cancelada", "failed")
+            await message_history.add("Promoção Cancelada", "failed")
         except Exception as e:
             logger.error(f"Erro no cancelamento: {e}")
 
     # --- Métodos legado/manual mantidos ---
 
-    async def send_manual_message(self, text: str) -> bool:
-        if not self.application: return False
+    async def send_manual_message(self, text: str, image_bytes: bytes = None) -> bool:
+        """Envia mensagem manual para o canal, opcionalmente com foto"""
+        if not self.application:
+            logger.error("Bot não inicializado")
+            return False
+            
         try:
-            await self.application.bot.send_message(
-                chat_id=self.channel_id,
-                text=text,
-                disable_web_page_preview=False
-            )
-            message_history.add(text, "success")
+            if image_bytes:
+                await self.application.bot.send_photo(
+                    chat_id=self.channel_id,
+                    photo=image_bytes,
+                    caption=text,
+                    parse_mode=ParseMode.MARKDOWN_V2
+                )
+            else:
+                await self.application.bot.send_message(
+                    chat_id=self.channel_id,
+                    text=text,
+                    parse_mode=ParseMode.MARKDOWN_V2
+                )
+            
+            # Salva no histórico
+            await message_history.add(text, "success")
             return True
+            
         except Exception as e:
-            logger.error(f"Erro manual: {e}")
-            message_history.add(text, "failed", str(e))
+            logger.error(f"Erro ao enviar manual: {e}")
+            await message_history.add(text, "failed", str(e))
             return False
 
     async def health_check(self) -> bool:
