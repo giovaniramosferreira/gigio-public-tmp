@@ -1,0 +1,27 @@
+# Core
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-telegram-bot==21.0
+redis==5.0.1
+apscheduler==3.10.4
+httpx
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# Amazon PA API
+
+# Web Scraping (para ML)
+selectolax==0.3.21
+httpx[http2]
+
+# Utils
+python-dotenv==1.0.0
+loguru==0.7.2
+
+# Testing
+pytest==7.4.4
+pytest-asyncio==0.23.3
+curl-cffi>=0.5.10
+
+# Image Generation
+Pillow>=10.0.0
