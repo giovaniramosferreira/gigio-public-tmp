@@ -150,8 +150,8 @@ export default function LoginPage() {
                         type="text" value={code}
                         onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                         placeholder="000000" required maxLength={6}
-                        className="w-full pl-10 pr-4 py-3 rounded-xl text-sm text-center tracking-[0.5em]"
-                        style={{ ...inputStyle, fontSize: '1.25rem', letterSpacing: '0.5em' }}
+                        className="w-full pl-10 pr-4 py-3 rounded-xl text-center"
+                        style={{ ...inputStyle, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '0.3em' }}
                         onFocus={e => (e.currentTarget.style.borderColor = '#8A05BE')}
                         onBlur={e  => (e.currentTarget.style.borderColor = 'rgba(138,5,190,0.3)')}
                       />
