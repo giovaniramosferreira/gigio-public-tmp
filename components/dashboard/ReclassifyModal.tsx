@@ -144,7 +144,7 @@ export default function ReclassifyModal({ transactions }: Props) {
     if (newCategory === sourceCategory) return
 
     // Optimistic: hide card immediately
-    setRemoved(prev => new Set([...prev, txnId]))
+    setRemoved(prev => new Set(Array.from(prev).concat(txnId)))
 
     const { error } = await supabase
       .from('transactions')
@@ -153,7 +153,7 @@ export default function ReclassifyModal({ transactions }: Props) {
 
     if (error) {
       toast.error('Erro ao atualizar categoria')
-      setRemoved(prev => { const s = new Set(prev); s.delete(txnId); return s })
+      setRemoved(prev => { const s = new Set(Array.from(prev)); s.delete(txnId); return s })
     } else {
       toast.success(`Movido para ${newCategory}`)
       router.refresh()
