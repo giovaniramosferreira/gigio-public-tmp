@@ -148,8 +148,8 @@ export default function LoginPage() {
                       <KeyRound size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#9b7db8' }} />
                       <input
                         type="text" value={code}
-                        onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                        placeholder="000000" required maxLength={6}
+                        onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                        placeholder="00000000" required maxLength={8}
                         className="w-full pl-10 pr-4 py-3 rounded-xl text-center"
                         style={{ ...inputStyle, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '0.3em' }}
                         onFocus={e => (e.currentTarget.style.borderColor = '#8A05BE')}

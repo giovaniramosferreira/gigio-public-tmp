@@ -10,6 +10,7 @@ import TransactionList from '@/components/dashboard/TransactionList'
 import EmptyState from '@/components/dashboard/EmptyState'
 import MonthFilter from '@/components/dashboard/MonthFilter'
 import SpendingLineChart from '@/components/dashboard/SpendingLineChart'
+import ReclassifyModal from '@/components/dashboard/ReclassifyModal'
 
 const MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
 
@@ -101,7 +102,10 @@ export default async function DashboardPage({
             Visão geral de <strong style={{ color: '#d49dff' }}>{monthLabel}</strong>
           </p>
         </div>
-        <MonthFilter months={monthOptions} selected={selectedMonth} />
+        <div className="flex items-center gap-3">
+          <ReclassifyModal transactions={transactions} />
+          <MonthFilter months={monthOptions} selected={selectedMonth} />
+        </div>
       </div>
 
       <div className="space-y-6">

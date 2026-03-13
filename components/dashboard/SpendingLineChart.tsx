@@ -15,11 +15,27 @@ interface Props {
 
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.[0]) return null
+  const details: { label: string; amount: number; color: string }[] = payload[0]?.payload?.details ?? []
   return (
-    <div className="px-3 py-2.5 rounded-xl text-sm"
-      style={{ background: '#1e0035', border: '1px solid rgba(138,5,190,0.4)', fontFamily: 'DM Sans', color: '#f0e6ff', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
-      <div className="text-xs mb-1" style={{ color: '#9b7db8' }}>Dia {label}</div>
-      <div className="font-bold" style={{ color: '#d49dff' }}>{formatBRL(payload[0].value)}</div>
+    <div className="rounded-xl text-sm"
+      style={{ background: '#1e0035', border: '1px solid rgba(138,5,190,0.4)', fontFamily: 'DM Sans', color: '#f0e6ff', boxShadow: '0 8px 24px rgba(0,0,0,0.4)', minWidth: 200 }}>
+      <div className="px-3 pt-2.5 pb-2 border-b" style={{ borderColor: 'rgba(138,5,190,0.25)' }}>
+        <div className="text-xs mb-0.5" style={{ color: '#9b7db8' }}>Dia {label}</div>
+        <div className="font-bold" style={{ color: '#d49dff' }}>{formatBRL(payload[0].value)}</div>
+      </div>
+      {details.length > 0 && (
+        <div className="px-3 py-2 flex flex-col gap-1">
+          {details.map(d => (
+            <div key={d.label} className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: d.color }} />
+                <span className="text-xs" style={{ color: '#c4a8e0' }}>{d.label}</span>
+              </div>
+              <span className="text-xs font-medium" style={{ color: '#f0e6ff' }}>{formatBRL(d.amount)}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -41,17 +57,31 @@ export default function SpendingLineChart({ transactions }: Props) {
       : debits.filter(t => t.category === activeCategory)
 
     const byDay: Record<string, number> = {}
+    const byDayCategory: Record<string, Record<string, number>> = {}
+
     for (const t of filtered) {
-      const day = t.date.slice(8, 10) // DD
+      const day = t.date.slice(8, 10)
       byDay[day] = (byDay[day] || 0) + t.amount
+      if (!byDayCategory[day]) byDayCategory[day] = {}
+      byDayCategory[day][t.category] = (byDayCategory[day][t.category] || 0) + t.amount
     }
 
-    // Preenche todos os dias do mês (1-31) mesmo sem dados
     const days = Array.from(new Set(debits.map(t => t.date.slice(8, 10)))).sort()
-    return days.map(day => ({
-      day,
-      total: parseFloat((byDay[day] || 0).toFixed(2)),
-    }))
+    return days.map(day => {
+      const catMap = byDayCategory[day] ?? {}
+      const details = Object.entries(catMap)
+        .sort((a, b) => b[1] - a[1])
+        .map(([cat, amount]) => ({
+          label: cat,
+          amount: parseFloat(amount.toFixed(2)),
+          color: CATEGORY_COLORS[cat] || '#8A05BE',
+        }))
+      return {
+        day,
+        total: parseFloat((byDay[day] || 0).toFixed(2)),
+        details,
+      }
+    })
   }, [debits, activeCategory])
 
   const color = activeCategory === 'Todos' ? '#8A05BE' : (CATEGORY_COLORS[activeCategory] || '#8A05BE')
