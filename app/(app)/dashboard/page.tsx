@@ -9,6 +9,7 @@ import CategoryChart from '@/components/dashboard/CategoryChart'
 import TransactionList from '@/components/dashboard/TransactionList'
 import EmptyState from '@/components/dashboard/EmptyState'
 import MonthFilter from '@/components/dashboard/MonthFilter'
+import SpendingLineChart from '@/components/dashboard/SpendingLineChart'
 
 const MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
 
@@ -106,6 +107,7 @@ export default async function DashboardPage({
       <div className="space-y-6">
         <StatsCards stats={stats} />
         {story && <StoryCard story={story} monthLabel={monthLabel} />}
+        <SpendingLineChart transactions={transactions} />
         <div className="grid md:grid-cols-2 gap-6">
           <CategoryChart categories={stats.categoryBreakdown} />
           <TransactionList transactions={transactions.slice(0, 15)} />
