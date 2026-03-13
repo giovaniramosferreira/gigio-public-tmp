@@ -28,9 +28,9 @@ export default async function DashboardPage({
     .eq('user_id', session.user.id)
     .order('date', { ascending: false })
 
-  const availableMonths = [...new Set(
+  const availableMonths = Array.from(new Set(
     (allTxs || []).map(t => t.date.slice(0, 7))
-  )].sort((a, b) => b.localeCompare(a))
+  )).sort((a, b) => b.localeCompare(a))
 
   // Se não há dados, mostra empty state
   if (availableMonths.length === 0) {
