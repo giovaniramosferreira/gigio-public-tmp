@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ls c:/antigravity/poup-project/poup/.env*)"
+      "Bash(ls c:/antigravity/poup-project/poup/.env*)",
+      "Bash(ls c:/antigravity/poup-project/poup/app/\\\\\\(auth\\\\\\)/)"
     ]
   }
 }
