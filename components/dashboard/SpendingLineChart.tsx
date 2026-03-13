@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, defs, linearGradient, stop,
+  ResponsiveContainer,
 } from 'recharts'
 import { Transaction } from '@/types'
 import { formatBRL, CATEGORY_COLORS } from '@/lib/analytics'
