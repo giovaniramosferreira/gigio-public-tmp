@@ -60,12 +60,14 @@ export function parseNubankCSV(csvContent: string): ParsedTransaction[] {
 
         const rawAmount = parseFloat(cols[valIdx].replace(',', '.'))
         if (isNaN(rawAmount)) continue
+        // Valores negativos em fatura de cartão = pagamento da fatura — ignorar
+        if (rawAmount <= 0) continue
 
         transactions.push({
           date: parseDate(cols[dateIdx] || cols[0]),
           description: cols[descIdx] || cols[1] || 'Sem descrição',
-          amount: Math.abs(rawAmount),
-          type: rawAmount > 0 ? 'credit' : 'debit',
+          amount: rawAmount,
+          type: 'debit',
           raw_data: { format, raw: cols },
         })
       } else {
