@@ -47,7 +47,7 @@ export default async function TransactionsPage({
     months.push({ value: val, label: `${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}` })
   }
 
-  const categories = [...new Set(transactions.map(t => t.category))]
+  const categories = Array.from(new Set(transactions.map(t => t.category)))
 
   return (
     <div className="max-w-4xl mx-auto">
