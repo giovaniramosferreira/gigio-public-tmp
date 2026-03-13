@@ -148,8 +148,8 @@ export default function LoginPage() {
                       <KeyRound size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#9b7db8' }} />
                       <input
                         type="text" value={code}
-                        onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                        placeholder="000000" required maxLength={6}
+                        onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                        placeholder="00000000" required maxLength={8}
                         className="w-full pl-10 pr-4 py-3 rounded-xl text-center"
                         style={{ ...inputStyle, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '0.3em' }}
                         onFocus={e => (e.currentTarget.style.borderColor = '#8A05BE')}
@@ -158,7 +158,7 @@ export default function LoginPage() {
                     </div>
                   </div>
 
-                  <button type="submit" disabled={loading || code.length < 6}
+                  <button type="submit" disabled={loading || code.length < 6 || code.length > 8}
                     className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-sm transition-all"
                     style={{
                       background: loading ? 'rgba(138,5,190,0.4)' : 'linear-gradient(135deg, #8A05BE, #a83eff)',
