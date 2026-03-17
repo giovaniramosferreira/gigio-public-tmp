@@ -84,6 +84,7 @@ export default function Dashboard() {
   const [generatingRowId, setGeneratingRowId] = useState<string | null>(null)
   const [generatingBatch, setGeneratingBatch] = useState(false)
   const [progressMsg, setProgressMsg] = useState('')
+  const [genError, setGenError] = useState('')
   const [inlinePost, setInlinePost] = useState<any>(null)
   const inlineRef = useRef<HTMLDivElement>(null)
 
@@ -178,6 +179,7 @@ export default function Dashboard() {
   async function generateSingle(videoId: string) {
     setGeneratingRowId(videoId)
     setInlinePost(null)
+    setGenError('')
     try {
       setProgressMsg('📄 Buscando transcrição do vídeo...')
       const { text: transcript } = await apiPost('/api/generate/transcript', { videoId })
@@ -207,8 +209,8 @@ export default function Dashboard() {
       }
       await fetchStats()
     } catch (err: any) {
-      setProgressMsg(`❌ ${err.message}`)
-      setTimeout(() => setProgressMsg(''), 4000)
+      setProgressMsg('')
+      setGenError(err.message || 'Erro desconhecido')
     }
     setGeneratingRowId(null)
   }
@@ -464,6 +466,26 @@ export default function Dashboard() {
                 <span className="inline-block w-4 h-4 border-2 rounded-full animate-spin flex-shrink-0"
                   style={{ borderColor: 'rgba(255,208,0,0.2)', borderTopColor: 'var(--yellow)' }} />
                 <span className="text-sm font-medium" style={{ color: 'var(--yellow)' }}>{progressMsg}</span>
+              </div>
+            )}
+
+            {/* Error */}
+            {genError && (
+              <div className="mb-4 px-4 py-3 rounded-xl flex items-start gap-3"
+                style={{ background: '#2a1111', border: '1px solid #3f1919' }}>
+                <span className="text-base flex-shrink-0">⚠️</span>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold mb-0.5" style={{ color: '#f87171' }}>Erro ao gerar carrossel</p>
+                  <p className="text-xs" style={{ color: '#fca5a5' }}>{genError}</p>
+                  <p className="text-xs mt-1" style={{ color: '#9a3a3a' }}>
+                    Verifique os logs em: vercel.com → projeto → Deployments → Functions
+                  </p>
+                </div>
+                <button onClick={() => setGenError('')}
+                  className="text-xs px-2 py-1 rounded flex-shrink-0"
+                  style={{ background: '#3f1919', color: '#f87171' }}>
+                  ✕
+                </button>
               </div>
             )}
 
