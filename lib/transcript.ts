@@ -5,30 +5,34 @@ export interface TranscriptResult {
   language: string
 }
 
-export async function getTranscript(
-  videoId: string
-): Promise<TranscriptResult | null> {
-  // Tenta PT primeiro, depois EN
-  const languages = ['pt', 'pt-BR', 'en']
+function parseTranscript(items: any[]): string {
+  return items
+    .map((item) => item.text)
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .replace(/\[.*?\]/g, '') // remove [Music], [Applause], etc.
+    .trim()
+    .substring(0, 8000)
+}
 
+export async function getTranscript(videoId: string): Promise<TranscriptResult | null> {
+  // 1. Try without specifying language — picks whatever is available (including auto-generated)
+  try {
+    const transcript = await YoutubeTranscript.fetchTranscript(videoId)
+    if (transcript?.length > 0) {
+      return { text: parseTranscript(transcript), language: 'auto' }
+    }
+  } catch {}
+
+  // 2. Try common language codes as fallback
+  const languages = ['en', 'en-US', 'en-GB', 'pt', 'pt-BR', 'es', 'fr', 'de', 'ja', 'ko']
   for (const lang of languages) {
     try {
-      const transcript = await YoutubeTranscript.fetchTranscript(videoId, {
-        lang,
-      })
-
-      if (transcript && transcript.length > 0) {
-        const text = transcript
-          .map((item) => item.text)
-          .join(' ')
-          .replace(/\s+/g, ' ')
-          .trim()
-          .substring(0, 8000) // Limite para não estourar contexto
-
-        return { text, language: lang }
+      const transcript = await YoutubeTranscript.fetchTranscript(videoId, { lang })
+      if (transcript?.length > 0) {
+        return { text: parseTranscript(transcript), language: lang }
       }
     } catch {
-      // Tenta próximo idioma
       continue
     }
   }
