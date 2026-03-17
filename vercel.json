@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/run?secret=viralpost-secret-2024",
+      "schedule": "0 10 * * *"
+    }
+  ]
+}
