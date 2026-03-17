@@ -52,19 +52,25 @@ TRANSCRIÇÃO (parcial):
 ${transcript}
 
 ═══════════════════════════════════════
-REGRAS DOS SLIDES (exatamente 6):
+REGRAS DOS SLIDES (exatamente 10):
 ═══════════════════════════════════════
-- Slide 1 (cover): Título provocador/curioso com máx 8 palavras. Deve gerar curiosidade imediata.
-- Slides 2–5 (content): Um ponto surpreendente por slide. Título curto + 2-3 linhas diretas.
-- Slide 6 (cta): "Assista o vídeo completo 👇" + URL. Emoji ▶️.
-- Tom: informativo, direto, linguagem brasileira casual.
-- NÃO resuma — destaque os fatos mais CURIOSOS e SURPREENDENTES.
-- Objetivo: fazer o usuário salvar o post e querer assistir o vídeo original.
+ESTRUTURA OBRIGATÓRIA:
+- Slide 1 (cover): Gancho inicial. Título de até 8 palavras que cause impacto imediato — uma afirmação surpreendente, uma contradição ou uma pergunta que o leitor não consegue ignorar.
+- Slides 2–9 (content): Um insight profundo por slide. Cada slide deve revelar algo que o leitor genuinamente não sabia e que muda sua forma de ver o tema. Título direto + 3-4 linhas densas de conteúdo real.
+- Slide 10 (cta): Call to action para o vídeo original.
+
+TOM E ESTILO — CRÍTICO:
+- Escreva como um jornalista inteligente falando com adultos curiosos, não como um professor explicando para crianças.
+- Use linguagem sofisticada mas acessível. Evite exclamações excessivas, palavras como "incrível!", "uau!", "chocante!" — deixe o conteúdo falar por si.
+- Prefira frases assertivas e densas: "A razão pela qual isso acontece revela uma falha fundamental em como entendemos X" em vez de "Isso é muito interessante!!!".
+- Cada slide deve terminar deixando o leitor querendo o próximo — crie tensão narrativa.
+- NÃO resuma o vídeo. Selecione os 8 pontos mais inesperados, contraintuitivos ou desconhecidos do tema.
+- Objetivo: fazer o leitor sentir que aprendeu algo valioso e salvar o post para reler.
 
 Para "imageQuery": query em INGLÊS para buscar foto de fundo no Unsplash.
-- Seja específico e visual (ex: "ancient egyptian pyramid desert sunset").
-- Evite queries abstratas — prefira cenas concretas.
-- Slide 6: use "youtube play button screen dark".
+- Seja específico e cinematográfico (ex: "vast empty space black hole nebula", "ancient library manuscripts candlelight").
+- Evite queries genéricas — prefira imagens que criem atmosfera e reforcem o conteúdo do slide.
+- Slide 10: use "youtube play button screen dark".
 
 Para "altText": descreva a imagem de fundo ideal para acessibilidade + SEO.
 - Exemplo: "Pirâmides do Egito ao pôr do sol com céu alaranjado"
@@ -117,12 +123,16 @@ Ex: "#curiosidadeshistoricas #fatoraros ..."
 Retorne APENAS JSON válido neste formato exato, sem texto antes ou depois:
 {
   "slides": [
-    { "order": 1, "type": "cover", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
-    { "order": 2, "type": "content", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
-    { "order": 3, "type": "content", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
-    { "order": 4, "type": "content", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
-    { "order": 5, "type": "content", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
-    { "order": 6, "type": "cta", "title": "Assista o vídeo completo 👇", "content": "Assista no canal: ${video.channelName}\\nhttps://youtube.com/watch?v=${video.youtubeId}", "emoji": "▶️", "imageQuery": "youtube play button screen dark", "altText": "Botão play do YouTube em tela escura" }
+    { "order": 1,  "type": "cover",   "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
+    { "order": 2,  "type": "content", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
+    { "order": 3,  "type": "content", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
+    { "order": 4,  "type": "content", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
+    { "order": 5,  "type": "content", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
+    { "order": 6,  "type": "content", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
+    { "order": 7,  "type": "content", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
+    { "order": 8,  "type": "content", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
+    { "order": 9,  "type": "content", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
+    { "order": 10, "type": "cta", "title": "Assista o vídeo completo 👇", "content": "Assista no canal: ${video.channelName}\\nhttps://youtube.com/watch?v=${video.youtubeId}", "emoji": "▶️", "imageQuery": "youtube play button screen dark", "altText": "Botão play do YouTube em tela escura" }
   ],
   "caption": "hook forte na primeira linha\\n\\ncorpo do texto aqui\\n\\nCTA de saves aqui",
   "hashtags": ["tag1", "tag2"],
@@ -137,7 +147,7 @@ Retorne APENAS JSON válido neste formato exato, sem texto antes ou depois:
   try {
     const response = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2400,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     })
 
