@@ -173,6 +173,23 @@ export async function searchVideosByKeywords(
     .sort((a: VideoData, b: VideoData) => b.likeViewRatio - a.likeViewRatio)
 }
 
+// ── VIDEO DESCRIPTION (fallback when transcript unavailable) ─────────────────
+
+export async function getVideoDescription(youtubeId: string): Promise<string | null> {
+  try {
+    const res = await youtube.videos.list({
+      part: ['snippet'],
+      id: [youtubeId],
+    } as any)
+    const item = res.data.items?.[0]
+    if (!item) return null
+    const desc = item.snippet?.description?.trim()
+    return desc && desc.length > 100 ? desc.substring(0, 6000) : null
+  } catch {
+    return null
+  }
+}
+
 // ── Helper ────────────────────────────────────────────────────────────────────
 
 async function getSubscriberMap(channelIds: string[]): Promise<Map<string, number>> {
