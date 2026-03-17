@@ -19,14 +19,15 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    const supabase = createClient()
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { shouldCreateUser: true },
+    const res = await fetch('/api/auth/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.trim() }),
     })
+    const data = await res.json()
 
-    if (error) {
-      setError(error.message)
+    if (!res.ok) {
+      setError(data.error || 'Erro ao enviar código.')
     } else {
       setStep('otp')
     }
@@ -39,15 +40,28 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
+    const res = await fetch('/api/auth/verify-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.trim(), code: otp.trim() }),
+    })
+    const data = await res.json()
+
+    if (!res.ok) {
+      setError(data.error || 'Código inválido.')
+      setLoading(false)
+      return
+    }
+
+    // Exchange token_hash for a real Supabase session
     const supabase = createClient()
-    const { error } = await supabase.auth.verifyOtp({
-      email: email.trim(),
-      token: otp.trim(),
-      type: 'email',
+    const { error: authError } = await supabase.auth.verifyOtp({
+      token_hash: data.token_hash,
+      type: 'magiclink',
     })
 
-    if (error) {
-      setError(error.message)
+    if (authError) {
+      setError(authError.message)
       setLoading(false)
     } else {
       router.push('/dashboard')
@@ -163,9 +177,7 @@ export default function LoginPage() {
                   {loading ? 'Verificando...' : 'Entrar'}
                 </button>
 
-                <button type="button"
-                  onClick={handleSendOtp}
-                  disabled={loading}
+                <button type="button" onClick={handleSendOtp} disabled={loading}
                   className="w-full py-2 text-xs transition-opacity hover:opacity-70 disabled:opacity-30"
                   style={{ color: 'var(--text-muted)' }}>
                   Reenviar código
