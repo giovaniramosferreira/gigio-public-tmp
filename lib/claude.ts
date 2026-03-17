@@ -122,7 +122,7 @@ Retorne APENAS JSON válido neste formato exato, sem texto antes ou depois:
     { "order": 3, "type": "content", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
     { "order": 4, "type": "content", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
     { "order": 5, "type": "content", "title": "", "content": "", "emoji": "", "imageQuery": "", "altText": "" },
-    { "order": 6, "type": "cta", "title": "Assista o vídeo completo 👇", "content": "https://youtube.com/watch?v=${video.youtubeId}", "emoji": "▶️", "imageQuery": "youtube play button screen dark", "altText": "Botão play do YouTube em tela escura" }
+    { "order": 6, "type": "cta", "title": "Assista o vídeo completo 👇", "content": "Assista no canal: ${video.channelName}\\nhttps://youtube.com/watch?v=${video.youtubeId}", "emoji": "▶️", "imageQuery": "youtube play button screen dark", "altText": "Botão play do YouTube em tela escura" }
   ],
   "caption": "hook forte na primeira linha\\n\\ncorpo do texto aqui\\n\\nCTA de saves aqui",
   "hashtags": ["tag1", "tag2"],
