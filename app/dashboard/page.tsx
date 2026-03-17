@@ -41,12 +41,6 @@ function fmt(n: number): string {
 
 const CRON_SECRET = process.env.NEXT_PUBLIC_CRON_SECRET || 'viralpost-secret-2024'
 
-const PROGRESS_STEPS = [
-  '📄 Buscando transcrição do vídeo...',
-  '✨ Gerando slides com IA...',
-  '🖼 Buscando imagens no Unsplash...',
-  '💾 Salvando e finalizando...',
-]
 
 const DEFAULT_KEYWORDS = [
   'documentary mystery',
@@ -92,7 +86,6 @@ export default function Dashboard() {
   const [progressMsg, setProgressMsg] = useState('')
   const [inlinePost, setInlinePost] = useState<any>(null)
   const inlineRef = useRef<HTMLDivElement>(null)
-  const progressRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
     fetchPosts()
@@ -101,22 +94,9 @@ export default function Dashboard() {
       .then((r) => r.ok ? r.json() : [])
       .then((d) => Array.isArray(d) ? setNiches(d) : null)
       .catch(() => null)
-    return () => { if (progressRef.current) clearInterval(progressRef.current) }
+    return () => {}
   }, [])
 
-  function startProgress() {
-    let step = 0
-    setProgressMsg(PROGRESS_STEPS[0])
-    progressRef.current = setInterval(() => {
-      step = Math.min(step + 1, PROGRESS_STEPS.length - 1)
-      setProgressMsg(PROGRESS_STEPS[step])
-    }, 3500)
-  }
-
-  function stopProgress() {
-    if (progressRef.current) { clearInterval(progressRef.current); progressRef.current = null }
-    setProgressMsg('')
-  }
 
   async function fetchPosts() {
     setLoading(true)
@@ -184,52 +164,65 @@ export default function Dashboard() {
     setFetchingUrl(false)
   }
 
-  async function callGenerate(videoIds: string[]) {
-    const res = await fetch('/api/videos/generate', {
+  async function apiPost(path: string, body: any) {
+    const res = await fetch(path, {
       method: 'POST',
       headers: { authorization: `Bearer ${CRON_SECRET}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ videoIds }),
+      body: JSON.stringify(body),
     })
-    return res.json()
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || `Erro em ${path}`)
+    return data
   }
 
   async function generateSingle(videoId: string) {
     setGeneratingRowId(videoId)
     setInlinePost(null)
-    startProgress()
     try {
-      const data = await callGenerate([videoId])
-      stopProgress()
+      setProgressMsg('📄 Buscando transcrição do vídeo...')
+      const { text: transcript } = await apiPost('/api/generate/transcript', { videoId })
+
+      setProgressMsg('✨ Gerando slides com IA...')
+      const carousel = await apiPost('/api/generate/ai', { videoId, transcript })
+
+      setProgressMsg('🖼 Buscando imagens no Unsplash...')
+      const { slides } = await apiPost('/api/generate/images', { slides: carousel.slides })
+
+      setProgressMsg('💾 Salvando...')
+      const { post } = await apiPost('/api/generate/save', {
+        videoId,
+        slides,
+        caption: carousel.caption,
+        hashtags: carousel.hashtags,
+        hashtagGroups: carousel.hashtagGroups,
+        firstComment: carousel.firstComment,
+      })
+
+      setProgressMsg('')
       setVideos((v) => v.map((vid) => vid.id === videoId ? { ...vid, processed: true } : vid))
-      if (data.posts?.[0]) {
-        setInlinePost(data.posts[0])
+      setUrlVideoPreview(null)
+      if (post) {
+        setInlinePost(post)
         setTimeout(() => inlineRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100)
       }
       await fetchStats()
-    } catch {
-      stopProgress()
+    } catch (err: any) {
+      setProgressMsg(`❌ ${err.message}`)
+      setTimeout(() => setProgressMsg(''), 4000)
     }
     setGeneratingRowId(null)
-    setUrlVideoPreview(null)
   }
 
   async function generateBatch() {
     if (selectedIds.size === 0) return
     setGeneratingBatch(true)
     setInlinePost(null)
-    startProgress()
-    try {
-      const data = await callGenerate(Array.from(selectedIds))
-      stopProgress()
-      setVideos((v) => v.map((vid) => selectedIds.has(vid.id) ? { ...vid, processed: true } : vid))
-      setSelectedIds(new Set())
-      if (data.posts?.[0]) {
-        setInlinePost(data.posts[0])
-        setTimeout(() => inlineRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100)
-      }
-      await fetchPosts()
-      await fetchStats()
-    } catch { stopProgress() }
+    const ids = Array.from(selectedIds)
+    for (const videoId of ids) {
+      await generateSingle(videoId)
+    }
+    setSelectedIds(new Set())
+    await fetchPosts()
     setGeneratingBatch(false)
   }
 
