@@ -1,5 +1,6 @@
 'use client'
 import { useRef, useState } from 'react'
+import { getStyle, STYLE_LIST, type StyleId } from '@/lib/styles'
 
 interface Slide {
   order: number
@@ -24,6 +25,7 @@ interface CarouselPreviewProps {
   hashtags: string[]
   hashtagGroups?: HashtagGroups
   firstComment?: string
+  styleId?: string | null
 }
 
 function CopyButton({ text, label, small = false }: { text: string; label: string; small?: boolean }) {
@@ -59,22 +61,23 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
-export default function CarouselPreview({ slides, caption, hashtags, hashtagGroups, firstComment }: CarouselPreviewProps) {
+export default function CarouselPreview({ slides, caption, hashtags, hashtagGroups, firstComment, styleId }: CarouselPreviewProps) {
   const [current, setCurrent] = useState(0)
   const [downloading, setDownloading] = useState(false)
 
+  const style = getStyle(styleId)
   const slide = slides[current]
 
   function getOverlay(s: Slide) {
-    if (s.type === 'cover') return 'linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(88,28,135,0.5), rgba(0,0,0,0.75))'
-    if (s.type === 'cta')   return 'linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.85))'
-    return 'linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.45), rgba(0,0,0,0.65))'
+    if (s.type === 'cover')   return style.coverOverlay
+    if (s.type === 'cta')     return style.ctaOverlay
+    return style.contentOverlay
   }
 
   function getFallback(s: Slide) {
-    if (s.type === 'cover') return 'linear-gradient(135deg, #1a0533, #4a0e6e)'
-    if (s.type === 'cta')   return '#0a0a0a'
-    return 'linear-gradient(135deg, #111, #1a1a1a)'
+    if (s.type === 'cover')   return style.coverFallback
+    if (s.type === 'cta')     return style.ctaFallback
+    return style.contentFallback
   }
 
   async function downloadAllSlides() {
@@ -112,8 +115,8 @@ export default function CarouselPreview({ slides, caption, hashtags, hashtagGrou
         `
         content.innerHTML = `
           <div style="font-size:120px; margin-bottom:40px; line-height:1;">${s.emoji}</div>
-          <h2 style="font-size:72px; font-weight:800; line-height:1.15; margin-bottom:32px; text-shadow:0 2px 12px rgba(0,0,0,0.6); font-family:sans-serif;">${s.title}</h2>
-          <p style="font-size:38px; opacity:0.9; line-height:1.6; text-shadow:0 1px 6px rgba(0,0,0,0.5); font-family:sans-serif;">${s.content}</p>
+          <h2 style="font-size:72px; font-weight:800; line-height:1.15; margin-bottom:32px; text-shadow:0 2px 12px rgba(0,0,0,0.6); font-family:sans-serif; color:${style.titleColor};">${s.title}</h2>
+          <p style="font-size:38px; line-height:1.6; text-shadow:0 1px 6px rgba(0,0,0,0.5); font-family:sans-serif; color:${style.contentColor};">${s.content}</p>
         `
 
         const counter = document.createElement('div')
@@ -174,6 +177,13 @@ export default function CarouselPreview({ slides, caption, hashtags, hashtagGrou
 
   return (
     <div className="flex flex-col gap-4">
+
+      {/* ── Style badge ── */}
+      <div className="flex items-center gap-2 mb-1">
+        <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: style.accentColor }} />
+        <span className="text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>{style.name}</span>
+        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>— {style.description}</span>
+      </div>
 
       {/* ── Slide preview ── */}
       <div className="relative rounded-2xl aspect-square overflow-hidden shadow-2xl">

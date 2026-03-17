@@ -9,6 +9,7 @@ interface Post {
   hashtags: string[]
   hashtag_groups?: { small?: string[]; medium?: string[]; large?: string[] }
   first_comment?: string
+  style?: string
   status: string
   created_at: string
   trending_videos: {
@@ -103,6 +104,7 @@ export default function PostCard({ post }: { post: Post }) {
               hashtags={post.hashtags}
               hashtagGroups={post.hashtag_groups}
               firstComment={post.first_comment}
+              styleId={post.style}
             />
             <a
               href={`https://youtube.com/watch?v=${video?.youtube_id}`}

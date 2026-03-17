@@ -2,10 +2,13 @@
 import { useEffect, useRef, useState } from 'react'
 import CarouselPreview from '@/components/CarouselPreview'
 import PostCard from '@/components/PostCard'
+import { createClient } from '@/lib/supabase-client'
+import { STYLE_LIST, type StyleId } from '@/lib/styles'
 
 type SortKey = 'view_count' | 'like_count' | 'comment_count' | 'published_at' | 'like_view_ratio' | 'subscriber_count'
 type SortDir = 'asc' | 'desc'
 type Mode = 'trending' | 'search' | 'url'
+type NavTab = 'videos' | 'posts' | 'settings'
 
 interface Video {
   id: string
@@ -39,9 +42,6 @@ function fmt(n: number): string {
   return String(n)
 }
 
-const CRON_SECRET = process.env.NEXT_PUBLIC_CRON_SECRET || 'viralpost-secret-2024'
-
-
 const DEFAULT_KEYWORDS = [
   'documentary mystery',
   'the science behind',
@@ -51,7 +51,12 @@ const DEFAULT_KEYWORDS = [
 ].join('\n')
 
 export default function Dashboard() {
-  const [tab, setTab] = useState<'videos' | 'posts'>('videos')
+  const supabase = createClient()
+
+  const [tab, setTab] = useState<NavTab>('videos')
+  const [userEmail, setUserEmail] = useState<string | null>(null)
+  const [authToken, setAuthToken] = useState<string | null>(null)
+
   const [posts, setPosts] = useState<any[]>([])
   const [stats, setStats] = useState({ totalPosts: 0, totalVideos: 0, postsToday: 0 })
   const [niches, setNiches] = useState<{ id: string; name: string }[]>([])
@@ -80,6 +85,9 @@ export default function Dashboard() {
   const [urlError, setUrlError] = useState('')
   const [urlVideoPreview, setUrlVideoPreview] = useState<Video | null>(null)
 
+  // Style picker
+  const [selectedStyle, setSelectedStyle] = useState<StyleId>('dark-gold')
+
   // Generation
   const [generatingRowId, setGeneratingRowId] = useState<string | null>(null)
   const [generatingBatch, setGeneratingBatch] = useState(false)
@@ -88,21 +96,55 @@ export default function Dashboard() {
   const [inlinePost, setInlinePost] = useState<any>(null)
   const inlineRef = useRef<HTMLDivElement>(null)
 
+  // Instagram settings
+  const [igAccount, setIgAccount] = useState<{ ig_user_id: string; username: string } | null>(null)
+  const [igUserId, setIgUserId] = useState('')
+  const [igToken, setIgToken] = useState('')
+  const [igSaving, setIgSaving] = useState(false)
+  const [igMsg, setIgMsg] = useState('')
+
+  // Load auth session
   useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setUserEmail(session.user.email ?? null)
+        setAuthToken(session.access_token)
+      }
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setUserEmail(session?.user.email ?? null)
+      setAuthToken(session?.access_token ?? null)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // Load data once we have token
+  useEffect(() => {
+    if (!authToken) return
     fetchPosts()
     fetchStats()
+    fetchIgAccount()
     fetch('/api/niches')
       .then((r) => r.ok ? r.json() : [])
       .then((d) => Array.isArray(d) ? setNiches(d) : null)
       .catch(() => null)
-    return () => {}
-  }, [])
+  }, [authToken])
 
+  async function authHeaders() {
+    // Refresh session if needed
+    const { data: { session } } = await supabase.auth.getSession()
+    const token = session?.access_token ?? authToken
+    return {
+      authorization: `Bearer ${token}`,
+      'content-type': 'application/json',
+    }
+  }
 
   async function fetchPosts() {
     setLoading(true)
     try {
-      const r = await fetch('/api/posts')
+      const headers = await authHeaders()
+      const r = await fetch('/api/posts', { headers })
       const d = await r.json()
       setPosts(Array.isArray(d) ? d : [])
     } catch { setPosts([]) }
@@ -111,9 +153,21 @@ export default function Dashboard() {
 
   async function fetchStats() {
     try {
-      const r = await fetch('/api/stats')
+      const headers = await authHeaders()
+      const r = await fetch('/api/stats', { headers })
       const d = await r.json()
       if (d && typeof d.totalPosts === 'number') setStats(d)
+    } catch {}
+  }
+
+  async function fetchIgAccount() {
+    try {
+      const headers = await authHeaders()
+      const r = await fetch('/api/instagram/connect', { headers })
+      if (r.ok) {
+        const d = await r.json()
+        setIgAccount(d)
+      }
     } catch {}
   }
 
@@ -131,11 +185,8 @@ export default function Dashboard() {
         body.maxSubscribers = maxSubs
         body.language = language
       }
-      const res = await fetch('/api/videos/fetch', {
-        method: 'POST',
-        headers: { authorization: `Bearer ${CRON_SECRET}`, 'content-type': 'application/json' },
-        body: JSON.stringify(body),
-      })
+      const headers = await authHeaders()
+      const res = await fetch('/api/videos/fetch', { method: 'POST', headers, body: JSON.stringify(body) })
       const data = await res.json()
       setVideos(Array.isArray(data) ? data : [])
       setSelectedIds(new Set())
@@ -149,28 +200,20 @@ export default function Dashboard() {
     setUrlError('')
     setUrlVideoPreview(null)
     try {
+      const headers = await authHeaders()
       const res = await fetch('/api/videos/from-url', {
-        method: 'POST',
-        headers: { authorization: `Bearer ${CRON_SECRET}`, 'content-type': 'application/json' },
-        body: JSON.stringify({ url: urlInput.trim() }),
+        method: 'POST', headers, body: JSON.stringify({ url: urlInput.trim() }),
       })
       const data = await res.json()
-      if (!res.ok) {
-        setUrlError(data.error || 'Erro ao buscar vídeo')
-      } else {
-        setUrlVideoPreview(data)
-        setUrlInput('')
-      }
+      if (!res.ok) setUrlError(data.error || 'Erro ao buscar vídeo')
+      else { setUrlVideoPreview(data); setUrlInput('') }
     } catch { setUrlError('Erro de conexão') }
     setFetchingUrl(false)
   }
 
   async function apiPost(path: string, body: any) {
-    const res = await fetch(path, {
-      method: 'POST',
-      headers: { authorization: `Bearer ${CRON_SECRET}`, 'content-type': 'application/json' },
-      body: JSON.stringify(body),
-    })
+    const headers = await authHeaders()
+    const res = await fetch(path, { method: 'POST', headers, body: JSON.stringify(body) })
     const data = await res.json()
     if (!res.ok) throw new Error(data.error || `Erro em ${path}`)
     return data
@@ -192,12 +235,12 @@ export default function Dashboard() {
 
       setProgressMsg('💾 Salvando...')
       const { post } = await apiPost('/api/generate/save', {
-        videoId,
-        slides,
+        videoId, slides,
         caption: carousel.caption,
         hashtags: carousel.hashtags,
         hashtagGroups: carousel.hashtagGroups,
         firstComment: carousel.firstComment,
+        style: selectedStyle,
       })
 
       setProgressMsg('')
@@ -226,6 +269,40 @@ export default function Dashboard() {
     setSelectedIds(new Set())
     await fetchPosts()
     setGeneratingBatch(false)
+  }
+
+  async function saveIgAccount() {
+    if (!igUserId.trim() || !igToken.trim()) return
+    setIgSaving(true)
+    setIgMsg('')
+    try {
+      const headers = await authHeaders()
+      const res = await fetch('/api/instagram/connect', {
+        method: 'POST', headers, body: JSON.stringify({ igUserId: igUserId.trim(), accessToken: igToken.trim() }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setIgMsg(`❌ ${data.error}`) }
+      else {
+        setIgMsg(`✅ Conta @${data.username} conectada!`)
+        setIgAccount({ ig_user_id: igUserId.trim(), username: data.username })
+        setIgUserId('')
+        setIgToken('')
+      }
+    } catch { setIgMsg('❌ Erro de conexão') }
+    setIgSaving(false)
+  }
+
+  async function disconnectIg() {
+    if (!confirm('Desconectar conta do Instagram?')) return
+    const headers = await authHeaders()
+    await fetch('/api/instagram/connect', { method: 'DELETE', headers })
+    setIgAccount(null)
+    setIgMsg('')
+  }
+
+  async function logout() {
+    await supabase.auth.signOut()
+    window.location.href = '/login'
   }
 
   function toggleSelect(id: string) {
@@ -276,6 +353,8 @@ export default function Dashboard() {
     return 'text-[#555]'
   }
 
+  const currentStyleDef = STYLE_LIST.find((s) => s.id === selectedStyle)!
+
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-base)', color: 'var(--text-primary)' }}>
 
@@ -287,20 +366,33 @@ export default function Dashboard() {
             <span className="font-bold tracking-tight text-base">Viral<span style={{ color: 'var(--yellow)' }}>Post</span></span>
           </div>
           <div className="flex items-stretch gap-0">
-            {[{ key: 'videos', label: '🎬 Vídeos' }, { key: 'posts', label: `📱 Posts (${stats.totalPosts})` }].map((t) => (
-              <button key={t.key} onClick={() => setTab(t.key as any)}
+            {[
+              { key: 'videos',   label: '🎬 Vídeos' },
+              { key: 'posts',    label: `📱 Posts (${stats.totalPosts})` },
+              { key: 'settings', label: '⚙ Config' },
+            ].map((t) => (
+              <button key={t.key} onClick={() => setTab(t.key as NavTab)}
                 className="px-5 text-sm font-medium transition-colors relative"
                 style={{ color: tab === t.key ? 'var(--yellow)' : 'var(--text-secondary)', borderBottom: tab === t.key ? '2px solid var(--yellow)' : '2px solid transparent' }}
               >{t.label}</button>
             ))}
           </div>
           <div className="ml-auto flex items-center gap-6 text-sm">
-            {[{ label: 'Posts gerados', value: stats.totalPosts }, { label: 'Hoje', value: stats.postsToday }, { label: 'Vídeos', value: stats.totalVideos }].map((s) => (
+            {[{ label: 'Posts', value: stats.totalPosts }, { label: 'Hoje', value: stats.postsToday }, { label: 'Vídeos', value: stats.totalVideos }].map((s) => (
               <div key={s.label} className="flex items-baseline gap-1.5">
                 <span className="font-bold text-base" style={{ color: 'var(--yellow)' }}>{s.value}</span>
                 <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{s.label}</span>
               </div>
             ))}
+            {userEmail && (
+              <div className="flex items-center gap-2 pl-4" style={{ borderLeft: '1px solid var(--border)' }}>
+                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{userEmail}</span>
+                <button onClick={logout}
+                  className="text-xs px-2.5 py-1 rounded-lg transition-colors"
+                  style={{ background: 'var(--bg-raised)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+                >Sair</button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -345,7 +437,6 @@ export default function Dashboard() {
                   </div>
                   {urlError && <p className="text-sm px-3 py-2 rounded-lg" style={{ background: '#2a1111', color: '#f87171', border: '1px solid #3f1919' }}>⚠ {urlError}</p>}
 
-                  {/* Video preview card */}
                   {urlVideoPreview && (
                     <div className="rounded-xl p-4 flex gap-4 items-center" style={{ background: 'var(--bg-raised)', border: '1px solid rgba(255,208,0,0.2)' }}>
                       <img src={urlVideoPreview.thumbnail_url} alt="" className="w-32 h-20 object-cover rounded-lg flex-shrink-0" />
@@ -441,22 +532,49 @@ export default function Dashboard() {
                 </div>
               )}
 
-              {/* Action bar */}
-              {mode !== 'url' && (
-                <div className="flex items-center gap-3 mt-5 pt-5" style={{ borderTop: '1px solid var(--border)' }}>
-                  <button onClick={fetchVideos} disabled={fetching}
-                    className="px-6 py-2.5 rounded-lg text-sm font-bold disabled:opacity-40"
-                    style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
-                  >{fetching ? '⏳ Buscando...' : mode === 'search' ? '💎 Buscar Hidden Gems' : '🔥 Buscar Trending'}</button>
-
-                  {selectedIds.size > 0 && (
-                    <button onClick={generateBatch} disabled={isGenerating}
-                      className="px-6 py-2.5 rounded-lg text-sm font-bold disabled:opacity-40 ml-auto"
-                      style={{ background: 'var(--yellow)', color: '#000' }}
-                    >{generatingBatch ? '⏳ Gerando...' : `✨ Gerar Carrosséis (${selectedIds.size})`}</button>
-                  )}
+              {/* Style picker + action bar */}
+              <div className="flex items-start gap-4 mt-5 pt-5 flex-wrap" style={{ borderTop: '1px solid var(--border)' }}>
+                {/* Style picker */}
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wider mb-2" style={{ color: 'var(--text-muted)' }}>Estilo visual</p>
+                  <div className="flex gap-2">
+                    {STYLE_LIST.map((s) => (
+                      <button
+                        key={s.id}
+                        onClick={() => setSelectedStyle(s.id)}
+                        title={s.description}
+                        className="flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl transition-all"
+                        style={selectedStyle === s.id
+                          ? { border: `2px solid ${s.accentColor}`, background: 'var(--bg-raised)' }
+                          : { border: '2px solid var(--border)', background: 'transparent', opacity: 0.6 }
+                        }
+                      >
+                        <div className="w-8 h-8 rounded-lg" style={{ background: s.preview }} />
+                        <span className="text-xs font-medium leading-tight text-center" style={{ color: selectedStyle === s.id ? s.accentColor : 'var(--text-muted)', maxWidth: 60 }}>
+                          {s.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              )}
+
+                {/* Fetch button */}
+                {mode !== 'url' && (
+                  <div className="flex items-center gap-3 mt-auto ml-auto">
+                    <button onClick={fetchVideos} disabled={fetching}
+                      className="px-6 py-2.5 rounded-lg text-sm font-bold disabled:opacity-40"
+                      style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                    >{fetching ? '⏳ Buscando...' : mode === 'search' ? '💎 Buscar Hidden Gems' : '🔥 Buscar Trending'}</button>
+
+                    {selectedIds.size > 0 && (
+                      <button onClick={generateBatch} disabled={isGenerating}
+                        className="px-6 py-2.5 rounded-lg text-sm font-bold disabled:opacity-40"
+                        style={{ background: 'var(--yellow)', color: '#000' }}
+                      >{generatingBatch ? '⏳ Gerando...' : `✨ Gerar Carrosséis (${selectedIds.size})`}</button>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Progress bar */}
@@ -477,15 +595,10 @@ export default function Dashboard() {
                 <div className="flex-1">
                   <p className="text-sm font-semibold mb-0.5" style={{ color: '#f87171' }}>Erro ao gerar carrossel</p>
                   <p className="text-xs" style={{ color: '#fca5a5' }}>{genError}</p>
-                  <p className="text-xs mt-1" style={{ color: '#9a3a3a' }}>
-                    Verifique os logs em: vercel.com → projeto → Deployments → Functions
-                  </p>
                 </div>
                 <button onClick={() => setGenError('')}
                   className="text-xs px-2 py-1 rounded flex-shrink-0"
-                  style={{ background: '#3f1919', color: '#f87171' }}>
-                  ✕
-                </button>
+                  style={{ background: '#3f1919', color: '#f87171' }}>✕</button>
               </div>
             )}
 
@@ -516,6 +629,7 @@ export default function Dashboard() {
                       hashtags={inlinePost.hashtags}
                       hashtagGroups={inlinePost.hashtag_groups}
                       firstComment={inlinePost.first_comment}
+                      styleId={inlinePost.style}
                     />
                   </div>
                 </div>
@@ -607,12 +721,10 @@ export default function Dashboard() {
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center justify-center gap-1.5">
-                              {/* Watch button */}
                               <a href={`https://youtube.com/watch?v=${video.youtube_id}`} target="_blank" rel="noopener noreferrer"
                                 title="Assistir no YouTube"
                                 className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors text-sm"
                                 style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>▶️</a>
-                              {/* Quick generate */}
                               {!video.processed && (
                                 <button
                                   onClick={() => generateSingle(video.id)}
@@ -664,6 +776,112 @@ export default function Dashboard() {
             )}
           </div>
         )}
+
+        {/* ── TAB SETTINGS ── */}
+        {tab === 'settings' && (
+          <div className="max-w-2xl space-y-6">
+
+            {/* Account info */}
+            <div className="rounded-xl p-5" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-4" style={{ color: 'var(--text-muted)' }}>Conta</h2>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{userEmail ?? '—'}</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Autenticado via magic link</p>
+                </div>
+                <button onClick={logout}
+                  className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                  style={{ background: 'var(--bg-raised)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+                >Sair</button>
+              </div>
+            </div>
+
+            {/* Instagram connect */}
+            <div className="rounded-xl p-5" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Instagram Graph API</h2>
+              <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
+                Conecte sua conta para publicar carrosséis diretamente do ViralPost. Requer acesso ao Meta for Developers.
+              </p>
+
+              {igAccount ? (
+                <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: '#0f2a14', border: '1px solid #1a3a1e' }}>
+                  <div>
+                    <p className="text-sm font-semibold" style={{ color: '#86efac' }}>✓ @{igAccount.username || igAccount.ig_user_id} conectado</p>
+                    <p className="text-xs mt-0.5" style={{ color: '#4a7a54' }}>IG User ID: {igAccount.ig_user_id}</p>
+                  </div>
+                  <button onClick={disconnectIg}
+                    className="text-xs px-3 py-1.5 rounded-lg transition-colors"
+                    style={{ background: '#2a1111', color: '#f87171', border: '1px solid #3f1919' }}>
+                    Desconectar
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium mb-1.5 uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                      IG User ID
+                    </label>
+                    <input
+                      type="text"
+                      value={igUserId}
+                      onChange={(e) => setIgUserId(e.target.value)}
+                      placeholder="Ex: 17841400008460056"
+                      className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all"
+                      style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                      onFocus={(e) => (e.target.style.borderColor = 'var(--yellow)')}
+                      onBlur={(e) => (e.target.style.borderColor = 'var(--border)')}
+                    />
+                    <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+                      Encontre em: Meta Business Suite → Configurações → Instagram → ID da conta
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium mb-1.5 uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                      Access Token (permanente)
+                    </label>
+                    <input
+                      type="password"
+                      value={igToken}
+                      onChange={(e) => setIgToken(e.target.value)}
+                      placeholder="EAAxxxxxx..."
+                      className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-all font-mono"
+                      style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                      onFocus={(e) => (e.target.style.borderColor = 'var(--yellow)')}
+                      onBlur={(e) => (e.target.style.borderColor = 'var(--border)')}
+                    />
+                    <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+                      Gere em: Meta for Developers → Graph API Explorer → selecione seu app → gere token de longa duração
+                    </p>
+                  </div>
+                  <button
+                    onClick={saveIgAccount}
+                    disabled={igSaving || !igUserId.trim() || !igToken.trim()}
+                    className="px-5 py-2.5 rounded-lg text-sm font-bold disabled:opacity-40 transition-all"
+                    style={{ background: 'var(--yellow)', color: '#000' }}
+                  >
+                    {igSaving ? '⏳ Verificando...' : '🔗 Conectar Instagram'}
+                  </button>
+                  {igMsg && (
+                    <p className="text-sm px-3 py-2 rounded-lg"
+                      style={igMsg.startsWith('✅')
+                        ? { background: '#0f2a14', color: '#86efac', border: '1px solid #1a3a1e' }
+                        : { background: '#2a1111', color: '#f87171', border: '1px solid #3f1919' }
+                      }
+                    >{igMsg}</p>
+                  )}
+                </div>
+              )}
+
+              <div className="mt-4 p-3 rounded-lg text-xs space-y-1" style={{ background: 'var(--bg-raised)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
+                <p className="font-semibold" style={{ color: 'var(--text-secondary)' }}>Permissões necessárias no app Meta:</p>
+                <p>• instagram_basic · instagram_content_publish · pages_read_engagement</p>
+                <p>• O app deve estar em modo Produção (não Development) para publicar</p>
+              </div>
+            </div>
+
+          </div>
+        )}
+
       </div>
     </div>
   )
