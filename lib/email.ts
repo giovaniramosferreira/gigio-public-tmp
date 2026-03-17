@@ -4,7 +4,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function sendOtpEmail(email: string, code: string) {
   const { error } = await resend.emails.send({
-    from: 'ViralPost <noreply@viralpost.app>',
+    from: 'ViralPost <onboarding@resend.dev>',
     to: email,
     subject: `${code} é seu código de acesso — ViralPost`,
     html: otpEmailHtml(code),
