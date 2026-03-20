@@ -2,13 +2,16 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 import { Transaction } from '@/types'
 import { formatBRL, formatDate, CATEGORY_COLORS } from '@/lib/analytics'
 import { Search } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
 
-interface Props { transactions: Transaction[] }
+interface Props { transactions: Transaction[]; selectedMonth: string; totalCount: number }
 
-export default function TransactionList({ transactions }: Props) {
+export default function TransactionList({ transactions, selectedMonth, totalCount }: Props) {
   const [search, setSearch] = useState('')
 
   const filtered = transactions.filter(t =>
@@ -27,29 +30,30 @@ export default function TransactionList({ transactions }: Props) {
         <h3 className="text-base font-semibold" style={{ fontFamily: 'Sora', color: '#f0e6ff' }}>
           Transações recentes
         </h3>
-        <span className="text-xs px-2 py-1 rounded-full" style={{ background: 'rgba(138,5,190,0.15)', color: '#d49dff', fontFamily: 'DM Sans' }}>
-          {filtered.length}
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Badge>
+            {filtered.length}{totalCount > transactions.length ? ` de ${totalCount}` : ''}
+          </Badge>
+          {totalCount > transactions.length && (
+            <Link href={`/transactions?month=${selectedMonth}`}
+              style={{ fontSize: 11, color: '#9b7db8', fontFamily: 'DM Sans', textDecoration: 'none' }}
+              onMouseOver={e => (e.currentTarget.style.color = '#d49dff')}
+              onMouseOut={e  => (e.currentTarget.style.color = '#9b7db8')}>
+              ver todas →
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Search */}
       <div className="relative mb-4">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#9b7db8' }} />
-        <input
+        <Input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Buscar transação..."
-          className="w-full pl-8 pr-3 py-2 rounded-xl text-xs"
-          style={{
-            background: '#0d001a',
-            border: '1px solid rgba(138,5,190,0.2)',
-            color: '#f0e6ff',
-            fontFamily: 'DM Sans',
-            outline: 'none',
-          }}
-          onFocus={e  => (e.currentTarget.style.borderColor = '#8A05BE')}
-          onBlur={e   => (e.currentTarget.style.borderColor = 'rgba(138,5,190,0.2)')}
+          className="pl-8"
         />
       </div>
 

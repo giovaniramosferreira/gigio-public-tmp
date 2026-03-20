@@ -1,18 +1,25 @@
 import { Transaction, CategorySummary, MonthlyStats } from '@/types'
 
+export const MONTH_NAMES = [
+  'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+  'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro',
+]
+
 export const CATEGORY_COLORS: Record<string, string> = {
-  'Alimentação':   '#8A05BE',
-  'Transporte':    '#a83eff',
-  'Streaming':     '#6366f1',
-  'Saúde':         '#10b981',
-  'Mercado':       '#f59e0b',
-  'Receita':       '#22c55e',
-  'Moradia':       '#ef4444',
-  'Educação':      '#3b82f6',
-  'Lazer':         '#ec4899',
-  'Financeiro':    '#64748b',
-  'Investimentos': '#14b8a6',
-  'Outros':        '#6b7280',
+  'Alimentação':      '#8A05BE',
+  'Transporte':       '#a83eff',
+  'Streaming':        '#6366f1',
+  'Saúde':            '#10b981',
+  'Mercado':          '#f59e0b',
+  'Receita':          '#22c55e',
+  'Moradia':          '#ef4444',
+  'Educação':         '#3b82f6',
+  'Lazer':            '#ec4899',
+  'Financeiro':       '#64748b',
+  'Investimentos':    '#14b8a6',
+  'Compras online':   '#f97316',
+  'Pets':             '#fb923c',
+  'Outros':           '#6b7280',
 }
 
 export function calcMonthlyStats(transactions: Transaction[]): MonthlyStats {
@@ -69,9 +76,8 @@ export function formatDate(dateStr: string): string {
 }
 
 export function getMonthLabel(dateStr: string): string {
-  const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
   const [year, month] = dateStr.split('-')
-  return `${months[parseInt(month) - 1]} ${year}`
+  return `${MONTH_NAMES[parseInt(month) - 1]} ${year}`
 }
 
 export function percentChange(current: number, previous: number): number | null {

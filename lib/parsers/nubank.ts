@@ -1,4 +1,5 @@
 import { ParsedTransaction } from '@/types'
+import { VALID_CATEGORIES } from '@/lib/categories'
 
 type NubankFormat = 'credit_card' | 'account'
 
@@ -39,6 +40,13 @@ function parseCsvLine(line: string): string[] {
   return result
 }
 
+const MAX_COL_LENGTH = 500  // Trunca valores individuais do CSV antes de guardar em raw_data
+
+/** Remove caracteres de controle e trunca para evitar armazenamento de dados maliciosos */
+function sanitizeCol(value: string): string {
+  return value.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').slice(0, MAX_COL_LENGTH)
+}
+
 export function parseNubankCSV(csvContent: string): ParsedTransaction[] {
   const lines = csvContent.trim().split('\n').filter(l => l.trim())
   if (lines.length < 2) throw new Error('CSV vazio ou inválido')
@@ -68,7 +76,7 @@ export function parseNubankCSV(csvContent: string): ParsedTransaction[] {
           description: cols[descIdx] || cols[1] || 'Sem descrição',
           amount: rawAmount,
           type: 'debit',
-          raw_data: { format, raw: cols },
+          raw_data: { format, raw: cols.map(sanitizeCol) },
         })
       } else {
         // Data, Valor, Identificador, Descrição
@@ -84,7 +92,7 @@ export function parseNubankCSV(csvContent: string): ParsedTransaction[] {
           description: cols[descIdx] || cols[3] || cols[2] || 'Sem descrição',
           amount: Math.abs(rawAmount),
           type: rawAmount > 0 ? 'credit' : 'debit',
-          raw_data: { format, raw: cols },
+          raw_data: { format, raw: cols.map(sanitizeCol) },
         })
       }
     } catch {
@@ -100,6 +108,7 @@ export function parseNubankCSV(csvContent: string): ParsedTransaction[] {
 }
 
 // Categorização por regras de palavras-chave (plano Free)
+// Mantida em sincronia com as regras do prompt de IA em app/api/categorize/route.ts
 const CATEGORY_RULES: { keywords: string[]; category: string }[] = [
   { keywords: ['ifood', 'rappi', 'uber eats', 'delivery', 'pizz', 'burguer', 'burger', 'lanche', 'restaurante', 'sushi', 'japonês', 'japonesa'], category: 'Alimentação' },
   { keywords: ['uber', '99app', 'cabify', 'táxi', 'taxi', 'ônibus', 'metrô', 'metro', 'passagem', 'combustivel', 'combustível', 'posto', 'shell', 'ipiranga', 'petrobras'], category: 'Transporte' },
@@ -113,13 +122,16 @@ const CATEGORY_RULES: { keywords: string[]; category: string }[] = [
   { keywords: ['cinema', 'teatro', 'show', 'evento', 'ingresso', 'ticketmaster', 'sympla', 'eventbrite', 'bar ', 'boate', 'balada', 'viajem', 'viagem', 'hotel', 'airbnb', 'booking'], category: 'Lazer' },
   { keywords: ['nubank', 'fatura', 'pagamento fatura', 'cartão', 'cartao'], category: 'Financeiro' },
   { keywords: ['investimento', 'cdb', 'tesouro', 'ações', 'acoes', 'fundo', 'renda fixa', 'poupança', 'poupanca', 'xp ', 'rico ', 'btg', 'nuconta rende'], category: 'Investimentos' },
+  { keywords: ['mercado livre', 'mercadolivre', 'amazon', 'shopee', 'aliexpress', 'shein', 'magalu', 'magazine luiza', 'americanas', 'submarino'], category: 'Compras online' },
+  { keywords: ['petshop', 'pet shop', 'veterinário', 'veterinaria', 'ração', 'racao', 'banho e tosa', 'petlove', 'cobasi'], category: 'Pets' },
 ]
 
 export function categorizeByRules(description: string): string {
   const lower = description.toLowerCase()
   for (const rule of CATEGORY_RULES) {
     if (rule.keywords.some(k => lower.includes(k))) {
-      return rule.category
+      // Garantia: só retorna categorias da lista canônica
+      if (VALID_CATEGORIES.has(rule.category)) return rule.category
     }
   }
   return 'Outros'

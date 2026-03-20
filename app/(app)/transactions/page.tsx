@@ -1,7 +1,9 @@
+export const dynamic = 'force-dynamic'
+
 import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Transaction } from '@/types'
-import { formatBRL, formatDate, CATEGORY_COLORS } from '@/lib/analytics'
+import { formatBRL, formatDate, CATEGORY_COLORS, MONTH_NAMES } from '@/lib/analytics'
 import TransactionFilters from './TransactionFilters'
 
 export default async function TransactionsPage({
@@ -10,8 +12,8 @@ export default async function TransactionsPage({
   searchParams: { month?: string; category?: string }
 }) {
   const supabase = createServerClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) redirect('/login')
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
   const now = new Date()
   const defaultMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
@@ -23,7 +25,7 @@ export default async function TransactionsPage({
   let query = supabase
     .from('transactions')
     .select('*')
-    .eq('user_id', session.user.id)
+    .eq('user_id', user.id)
     .gte('date', monthStart)
     .lte('date', monthEnd)
     .order('date', { ascending: false })
@@ -40,7 +42,6 @@ export default async function TransactionsPage({
 
   // Available months (last 12)
   const months: { value: string; label: string }[] = []
-  const MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
   for (let i = 0; i < 12; i++) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
     const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`

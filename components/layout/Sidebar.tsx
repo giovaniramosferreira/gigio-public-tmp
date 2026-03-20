@@ -7,14 +7,15 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase/client'
 import { Profile } from '@/types'
 import {
-  LayoutDashboard, ListOrdered, Upload,
+  LayoutDashboard, ListOrdered, Upload, BookOpen,
   LogOut, Menu, X, ChevronRight, Crown
 } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { href: '/dashboard',    label: 'Dashboard',   icon: LayoutDashboard },
-  { href: '/transactions', label: 'Transações',  icon: ListOrdered },
-  { href: '/upload',       label: 'Importar',    icon: Upload },
+  { href: '/dashboard',    label: 'Dashboard',   icon: LayoutDashboard, pro: false },
+  { href: '/transactions', label: 'Transações',  icon: ListOrdered,     pro: false },
+  { href: '/upload',       label: 'Importar',    icon: Upload,          pro: false },
+  { href: '/historia',     label: 'Minha História', icon: BookOpen,     pro: true  },
 ]
 
 interface SidebarProps {
@@ -44,8 +45,10 @@ export default function Sidebar({ profile, userEmail }: SidebarProps) {
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1">
-        {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || pathname.startsWith(href + '/')
+        {NAV_ITEMS.map(({ href, label, icon: Icon, pro }) => {
+          const active    = pathname === href || pathname.startsWith(href + '/')
+          const isPro     = profile?.plan === 'pro'
+          const proLocked = pro && !isPro
           return (
             <Link key={href} href={href}
               onClick={() => setMobileOpen(false)}
@@ -53,11 +56,16 @@ export default function Sidebar({ profile, userEmail }: SidebarProps) {
               style={{
                 fontFamily: 'DM Sans',
                 background: active ? 'rgba(138,5,190,0.2)' : 'transparent',
-                color: active ? '#d49dff' : '#9b7db8',
+                color: active ? '#d49dff' : proLocked ? '#4a3060' : '#9b7db8',
                 border: active ? '1px solid rgba(138,5,190,0.3)' : '1px solid transparent',
               }}>
               <Icon size={18} />
               {label}
+              {pro && (
+                <span style={{ fontSize: 9, fontWeight: 700, background: isPro ? 'rgba(245,158,11,0.15)' : 'rgba(107,77,128,0.2)', color: isPro ? '#f59e0b' : '#4a3060', borderRadius: 4, padding: '1px 5px', marginLeft: 2 }}>
+                  PRO
+                </span>
+              )}
               {active && <ChevronRight size={14} className="ml-auto" />}
             </Link>
           )

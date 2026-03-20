@@ -1,5 +1,9 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+import { useTransition } from 'react'
+import LoadingCursor from '@/components/ui/LoadingCursor'
+
 interface FilterProps {
   months: { value: string; label: string }[]
   categories: string[]
@@ -8,15 +12,20 @@ interface FilterProps {
 }
 
 export default function TransactionFilters({ months, categories, selectedMonth, selectedCategory }: FilterProps) {
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+
   const handleChange = (key: string, value: string) => {
     const url = new URL(window.location.href)
     if (value) url.searchParams.set(key, value)
     else url.searchParams.delete(key)
-    window.location.href = url.toString()
+    startTransition(() => router.push(url.pathname + url.search))
   }
 
   return (
-    <div className="flex flex-wrap gap-3 mb-6">
+    <>
+    <LoadingCursor active={isPending} />
+    <div className="flex flex-wrap gap-3 mb-6" style={{ opacity: isPending ? 0.6 : 1, transition: 'opacity 0.2s' }}>
       <select
         name="month"
         defaultValue={selectedMonth}
@@ -40,5 +49,6 @@ export default function TransactionFilters({ months, categories, selectedMonth, 
         </select>
       )}
     </div>
+    </>
   )
 }
