@@ -75,7 +75,7 @@ function LoadingSkeleton() {
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-4 w-96" />
+        <Skeleton className="h-4 w-full max-w-sm" />
         <Skeleton className="h-[240px] w-full mt-4" />
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 12, marginTop: 24 }}>
           {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-36" />)}
@@ -168,7 +168,7 @@ export default function HistoriaClient({ isPro, userName }: Props) {
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto' }}>
+    <div style={{ maxWidth: 900, width: '100%', margin: '0 auto', overflowX: 'hidden' }}>
 
       {/* ── Masthead ── */}
       <motion.div

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body>
+      <body style={{ overflowX: 'hidden' }}>
         {children}
         <Toaster
           theme="dark"
