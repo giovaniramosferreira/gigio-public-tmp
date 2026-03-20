@@ -70,16 +70,16 @@ export default async function TransactionsPage({
       />
 
       {/* Summary */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-3 gap-2 md:gap-4 mb-6">
         {[
           { label: 'Receitas', value: totalCredit, color: '#22c55e' },
           { label: 'Gastos',   value: totalDebit,  color: '#ef4444' },
           { label: 'Saldo',    value: totalCredit - totalDebit, color: totalCredit - totalDebit >= 0 ? '#22c55e' : '#ef4444' },
         ].map(s => (
-          <div key={s.label} className="p-4 rounded-xl text-center"
+          <div key={s.label} className="p-2 md:p-4 rounded-xl text-center"
             style={{ background: '#150025', border: '1px solid rgba(138,5,190,0.2)' }}>
             <div className="text-xs mb-1" style={{ color: '#9b7db8', fontFamily: 'DM Sans' }}>{s.label}</div>
-            <div className="text-lg font-bold" style={{ fontFamily: 'Sora', color: s.color }}>
+            <div className="text-sm md:text-lg font-bold truncate" style={{ fontFamily: 'Sora', color: s.color }}>
               {formatBRL(s.value)}
             </div>
           </div>
@@ -95,7 +95,7 @@ export default async function TransactionsPage({
         ) : (
           <div className="divide-y" style={{ borderColor: 'rgba(138,5,190,0.1)' }}>
             {transactions.map(t => (
-              <div key={t.id} className="flex items-center gap-4 px-5 py-3.5 hover:bg-purple-950/20 transition-colors">
+              <div key={t.id} className="flex items-center gap-2 md:gap-4 px-3 md:px-5 py-3 md:py-3.5 hover:bg-purple-950/20 transition-colors">
                 <div className="w-2 h-2 rounded-full flex-shrink-0"
                   style={{ background: CATEGORY_COLORS[t.category] || '#6b7280' }} />
                 <div className="flex-1 min-w-0">

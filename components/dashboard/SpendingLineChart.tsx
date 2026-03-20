@@ -18,7 +18,7 @@ function CustomTooltip({ active, payload, label }: any) {
   const details: { label: string; amount: number; color: string }[] = payload[0]?.payload?.details ?? []
   return (
     <div className="rounded-xl text-sm"
-      style={{ background: '#1e0035', border: '1px solid rgba(138,5,190,0.4)', fontFamily: 'DM Sans', color: '#f0e6ff', boxShadow: '0 8px 24px rgba(0,0,0,0.4)', minWidth: 200 }}>
+      style={{ background: '#1e0035', border: '1px solid rgba(138,5,190,0.4)', fontFamily: 'DM Sans', color: '#f0e6ff', boxShadow: '0 8px 24px rgba(0,0,0,0.4)', minWidth: 160 }}>
       <div className="px-3 pt-2.5 pb-2 border-b" style={{ borderColor: 'rgba(138,5,190,0.25)' }}>
         <div className="text-xs mb-0.5" style={{ color: '#9b7db8' }}>Dia {label}</div>
         <div className="font-bold" style={{ color: '#d49dff' }}>{formatBRL(payload[0].value)}</div>
@@ -92,7 +92,7 @@ export default function SpendingLineChart({ transactions }: Props) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2, duration: 0.5 }}
-      className="p-6 rounded-2xl"
+      className="p-4 md:p-6 rounded-2xl"
       style={{ background: '#150025', border: '1px solid rgba(138,5,190,0.2)' }}>
 
       {/* Header */}
@@ -134,7 +134,7 @@ export default function SpendingLineChart({ transactions }: Props) {
           Nenhum gasto nesta categoria
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height={220}>
+        <ResponsiveContainer width="100%" height={180}>
           <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -155,7 +155,7 @@ export default function SpendingLineChart({ transactions }: Props) {
               axisLine={false}
               tickLine={false}
               tickFormatter={v => v === 0 ? '' : `R$${(v / 1000).toFixed(v >= 1000 ? 1 : 0)}${v >= 1000 ? 'k' : ''}`}
-              width={48}
+              width={40}
             />
             <Tooltip content={<CustomTooltip />} cursor={{ stroke: color, strokeWidth: 1, strokeDasharray: '4 4' }} />
             <Area

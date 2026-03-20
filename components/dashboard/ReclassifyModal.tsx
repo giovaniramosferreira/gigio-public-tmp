@@ -374,7 +374,7 @@ export default function ReclassifyModal({ transactions, isPro, customCategories:
           <Tags size={13} /> Reclassificar gastos
         </button>
 
-        <DialogContent className="max-w-[960px] max-h-[92vh] p-7 flex flex-col gap-[18px] bg-[#0e001a] rounded-[20px]">
+        <DialogContent className="w-full max-w-[960px] max-h-[92vh] p-4 md:p-7 flex flex-col gap-[18px] bg-[#0e001a] rounded-[20px]">
           <DialogTitle className="sr-only">Reclassificar gastos</DialogTitle>
           <DialogDescription className="sr-only">Arraste os gastos para as categorias corretas ou use a IA para classificar automaticamente.</DialogDescription>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 18, flex: 1, minHeight: 0, overflow: 'hidden' }}>
@@ -452,7 +452,7 @@ export default function ReclassifyModal({ transactions, isPro, customCategories:
 
               {/* DnD area — 2 columns: cards (wide) | category zones (right) */}
               <DndContext collisionDetection={pointerWithin} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 230px', gap: 20, minHeight: 0, flex: 1, overflow: 'hidden' }}>
+                <div className="grid grid-cols-1 md:grid-cols-[1fr_230px]" style={{ gap: 16, minHeight: 0, flex: 1, overflow: 'hidden' }}>
 
                   {/* Left: transaction cards */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6, overflowY: 'scroll', paddingRight: 20 }}>
@@ -481,7 +481,7 @@ export default function ReclassifyModal({ transactions, isPro, customCategories:
                   </div>
 
                   {/* Right: categories — clickable filter + drop target */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, overflowY: 'auto' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, overflowY: 'auto', maxHeight: 260 }} className="md:max-h-none">
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
                       <span style={{ fontSize: 11, color: '#6b4d80', fontFamily: 'DM Sans', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                         Categorias

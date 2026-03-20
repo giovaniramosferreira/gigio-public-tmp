@@ -68,7 +68,7 @@ const CARDS = [
 
 export default function StatsCards({ stats }: { stats: MonthlyStats }) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
       {CARDS.map((card, i) => {
         const Icon = card.icon
         const value = card.getValue(stats)
@@ -79,7 +79,7 @@ export default function StatsCards({ stats }: { stats: MonthlyStats }) {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.08, duration: 0.5 }}
-            className="p-5 rounded-2xl"
+            className="p-3 md:p-5 rounded-2xl"
             style={{ background: '#150025', border: `1px solid rgba(138,5,190,0.2)`, boxShadow: '0 4px 24px rgba(0,0,0,0.3)' }}>
 
             <div className="flex items-start justify-between mb-3">
@@ -92,7 +92,7 @@ export default function StatsCards({ stats }: { stats: MonthlyStats }) {
             <div className="text-xs font-medium mb-1" style={{ fontFamily: 'DM Sans', color: '#9b7db8' }}>
               {card.label}
             </div>
-            <div className="text-xl font-bold" style={{ fontFamily: 'Sora', color: card.color }}>
+            <div className="text-base md:text-xl font-bold" style={{ fontFamily: 'Sora', color: card.color }}>
               <AnimatedNumber value={value} />
             </div>
             {subtitle && (

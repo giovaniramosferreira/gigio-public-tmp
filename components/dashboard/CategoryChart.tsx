@@ -28,7 +28,7 @@ export default function CategoryChart({ categories }: Props) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4, duration: 0.5 }}
-      className="p-6 rounded-2xl"
+      className="p-4 md:p-6 rounded-2xl"
       style={{ background: '#150025', border: '1px solid rgba(138,5,190,0.2)' }}>
 
       <h3 className="text-base font-semibold mb-4" style={{ fontFamily: 'Sora', color: '#f0e6ff' }}>
@@ -36,7 +36,7 @@ export default function CategoryChart({ categories }: Props) {
       </h3>
 
       <div className="flex flex-col md:flex-row items-center gap-6">
-        <div className="w-full md:w-48 h-48 flex-shrink-0">
+        <div className="w-full md:w-48 h-36 md:h-48 flex-shrink-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie data={top} cx="50%" cy="50%" innerRadius={52} outerRadius={80}
