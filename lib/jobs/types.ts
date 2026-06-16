@@ -9,11 +9,13 @@ export const JOB_TYPES = {
   SCRIPT_GENERATE: "script.generate",
   SCRIPT_CRITIC: "script.critic",
   SCRIPT_REWRITE: "script.rewrite",
+  PRODUCTION_START: "production.start",
   ASSETS_GENERATE: "assets.generate",
   VOICE_RENDER: "voice.render",
   CAPTIONS_GENERATE: "captions.generate",
   VIDEO_ASSEMBLE: "video.assemble",
   THUMBNAILS_GENERATE: "thumbnails.generate",
+  METADATA_GENERATE: "metadata.generate",
   QA_RUN: "qa.run",
   PACKAGE_EXPORT: "package.export",
 } as const;

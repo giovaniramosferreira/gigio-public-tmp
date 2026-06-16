@@ -59,3 +59,48 @@ export const criticResultSchema = z.object({
   verdict: z.enum(["APPROVE", "REWRITE", "BLOCK"]),
 });
 export type CriticResult = z.infer<typeof criticResultSchema>;
+
+// ---- Visual directions (prompts/visual/scene-directions.md) ----
+export const sceneSchema = z.object({
+  beat_index: z.number().int().nonnegative(),
+  t_start: z.number().nonnegative(),
+  t_end: z.number().nonnegative(),
+  image_prompt: z.string().min(1),
+  motion_hint: z.string().default(""),
+  text_overlay: z.string().default(""),
+  iconography: z.string().default(""),
+});
+export const assetPlanSchema = z.object({
+  visual_style_notes: z.string().default(""),
+  scenes: z.array(sceneSchema).min(1),
+  text_overlay_options: z.array(z.string()).default([]),
+});
+export type AssetPlanOutput = z.infer<typeof assetPlanSchema>;
+
+// ---- Metadata (prompts/title/generate-metadata.md) ----
+export const metadataSchema = z.object({
+  titles: z.array(z.string()).min(1),
+  selected_title: z.string().min(1),
+  descriptions: z.array(z.string()).min(1),
+  selected_description: z.string().min(1),
+  hashtags: z.array(z.string()).default([]),
+  pinned_comment: z.string().default(""),
+  risk_notes: z.array(z.string()).default([]),
+});
+export type MetadataOutput = z.infer<typeof metadataSchema>;
+
+// ---- QA review (prompts/qa/qa-review.md) ----
+export const qaReasonSchema = z.object({
+  code: z.string(),
+  detail: z.string().default(""),
+});
+export const qaResultSchema = z.object({
+  originality_risk_score: z.number().min(0).max(1),
+  reused_risk_score: z.number().min(0).max(1),
+  overclaim_risk_score: z.number().min(0).max(1),
+  template_repetition_score: z.number().min(0).max(1),
+  decision: z.enum(["PASS", "REVIEW", "BLOCK"]),
+  reason_codes: z.array(qaReasonSchema).default([]),
+  summary: z.string().default(""),
+});
+export type QAResult = z.infer<typeof qaResultSchema>;

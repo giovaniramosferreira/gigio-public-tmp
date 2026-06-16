@@ -67,3 +67,39 @@ export async function assertFfmpeg(): Promise<void> {
 }
 
 export const ffmpegPaths = { ffmpeg: FFMPEG_PATH, ffprobe: FFPROBE_PATH };
+
+/** Run an ffmpeg command with the given args. Rejects with stderr on failure. */
+export function runFfmpeg(args: string[]): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const proc = spawn(FFMPEG_PATH, args);
+    let stderr = "";
+    proc.stderr?.on("data", (d) => (stderr += d.toString()));
+    proc.on("error", (err) => reject(new Error(`ffmpeg spawn failed: ${err.message}`)));
+    proc.on("close", (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`ffmpeg exited with code ${code}: ${stderr.slice(-2000)}`));
+    });
+  });
+}
+
+/** Probe a media file's duration in seconds via ffprobe. */
+export function probeDuration(filePath: string): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const proc = spawn(FFPROBE_PATH, [
+      "-v", "error",
+      "-show_entries", "format=duration",
+      "-of", "default=noprint_wrappers=1:nokey=1",
+      filePath,
+    ]);
+    let stdout = "";
+    let stderr = "";
+    proc.stdout?.on("data", (d) => (stdout += d.toString()));
+    proc.stderr?.on("data", (d) => (stderr += d.toString()));
+    proc.on("error", (err) => reject(new Error(`ffprobe spawn failed: ${err.message}`)));
+    proc.on("close", (code) => {
+      if (code !== 0) return reject(new Error(`ffprobe failed: ${stderr}`));
+      const seconds = parseFloat(stdout.trim());
+      resolve(Number.isFinite(seconds) ? seconds : 0);
+    });
+  });
+}
