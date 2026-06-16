@@ -1,0 +1,423 @@
+// DarkTube OS — Prisma schema
+// Aligned with docs/data-model.md (14 entities).
+// V1 datasource: SQLite. Migration path to PostgreSQL: change provider below
+// and adjust @default/native types as noted in docs/data-model.md.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Channel
+// ---------------------------------------------------------------------------
+model Channel {
+  id                    String   @id @default(cuid())
+  name                  String
+  slug                  String   @unique
+  description           String?
+  niche                 String?
+  targetAudience        String?  @map("target_audience")
+  toneProfileJson       String?  @map("tone_profile_json")
+  bannedPatternsJson    String?  @map("banned_patterns_json")
+  renderDefaultsJson    String?  @map("render_defaults_json")
+  reviewMode            String   @default("review-before-publish") @map("review_mode")
+  isActive              Boolean  @default(false) @map("is_active")
+  defaultVoiceId        String?  @map("default_voice_id")
+  defaultVoiceProvider  String?  @map("default_voice_provider")
+  youtubeChannelId      String?  @map("youtube_channel_id")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  pillars   EditorialPillar[]
+  ideas     ContentIdea[]
+  videos    VideoProject[]
+  analytics AnalyticsSnapshot[]
+
+  @@index([youtubeChannelId])
+  @@map("channels")
+}
+
+// ---------------------------------------------------------------------------
+// EditorialPillar
+// ---------------------------------------------------------------------------
+model EditorialPillar {
+  id          String   @id @default(cuid())
+  channelId   String   @map("channel_id")
+  name        String
+  description String?
+  keywords    String?
+  weight      Float    @default(0.5)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  channel Channel       @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  ideas   ContentIdea[]
+
+  @@index([channelId])
+  @@map("editorial_pillars")
+}
+
+// ---------------------------------------------------------------------------
+// ContentIdea
+// ---------------------------------------------------------------------------
+model ContentIdea {
+  id                   String    @id @default(cuid())
+  channelId            String    @map("channel_id")
+  pillarId             String?   @map("pillar_id")
+  title                String
+  hook                 String?
+  angle                String?
+  whyUnderdiscussed    String?   @map("why_underdiscussed")
+  whyNow               String?   @map("why_now")
+  status               String    @default("NEW")
+  totalScore           Float?    @map("total_score")
+  scoreBreakdownJson   String?   @map("score_breakdown_json")
+  originalityScore     Float?    @map("originality_score")
+  originalityCheckedAt DateTime? @map("originality_checked_at")
+  source               String?
+  seedPhrase           String?   @map("seed_phrase")
+  competitorUrls       String?   @map("competitor_urls")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  channel Channel          @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  pillar  EditorialPillar? @relation(fields: [pillarId], references: [id], onDelete: SetNull)
+  script  ScriptPackage?
+
+  @@index([channelId])
+  @@index([pillarId])
+  @@index([status])
+  @@index([totalScore])
+  @@map("content_ideas")
+}
+
+// ---------------------------------------------------------------------------
+// ScriptPackage
+// ---------------------------------------------------------------------------
+model ScriptPackage {
+  id                       String    @id @default(cuid())
+  contentIdeaId            String    @unique @map("content_idea_id")
+  status                   String    @default("DRAFT")
+  title                    String
+  thesis                   String?
+  audienceFrame            String?   @map("audience_frame")
+  hookVariantsJson         String?   @map("hook_variants_json")
+  selectedHook             String?   @map("selected_hook")
+  beatPlanJson             String?   @map("beat_plan_json")
+  fullScript               String?   @map("full_script")
+  wordCount                Int?      @map("word_count")
+  estimatedDurationSeconds Float?    @map("estimated_duration_seconds")
+  criticNotesJson          String?   @map("critic_notes_json")
+  originalityScore         Float?    @map("originality_score")
+  rewriteCount             Int       @default(0) @map("rewrite_count")
+  rewriteInstructions      String?   @map("rewrite_instructions")
+  approvedAt               DateTime? @map("approved_at")
+  approvedBy               String?   @map("approved_by")
+  generationModel          String?   @map("generation_model")
+  generationPromptVersion  String?   @map("generation_prompt_version")
+  createdAt                DateTime  @default(now()) @map("created_at")
+  updatedAt                DateTime  @updatedAt @map("updated_at")
+
+  contentIdea  ContentIdea   @relation(fields: [contentIdeaId], references: [id], onDelete: Cascade)
+  assetPlan    AssetPlan?
+  captions     CaptionTrack?
+  voiceRenders VoiceRender[]
+  videoProject VideoProject? @relation("VideoProjectScript")
+
+  @@index([contentIdeaId])
+  @@index([status])
+  @@map("script_packages")
+}
+
+// ---------------------------------------------------------------------------
+// AssetPlan
+// ---------------------------------------------------------------------------
+model AssetPlan {
+  id              String    @id @default(cuid())
+  scriptPackageId String    @unique @map("script_package_id")
+  visualStyleNotes String?  @map("visual_style_notes")
+  scenePromptsJson String?  @map("scene_prompts_json")
+  textOverlayOptionsJson String? @map("text_overlay_options_json")
+  provenanceJson  String?   @map("provenance_json")
+  totalScenes     Int?      @map("total_scenes")
+  provider        String?
+  status          String    @default("PENDING")
+  completedAt     DateTime? @map("completed_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  scriptPackage ScriptPackage @relation(fields: [scriptPackageId], references: [id], onDelete: Cascade)
+
+  @@index([scriptPackageId])
+  @@map("asset_plans")
+}
+
+// ---------------------------------------------------------------------------
+// VoiceRender
+// ---------------------------------------------------------------------------
+model VoiceRender {
+  id                String    @id @default(cuid())
+  scriptPackageId   String    @map("script_package_id")
+  voiceId           String    @map("voice_id")
+  voiceName         String?   @map("voice_name")
+  provider          String
+  settingsJson      String?   @map("settings_json")
+  status            String    @default("PENDING")
+  audioFilePath     String?   @map("audio_file_path")
+  durationSeconds   Float?    @map("duration_seconds")
+  fileSizeBytes     Int?      @map("file_size_bytes")
+  sampleRate        Int?      @map("sample_rate")
+  format            String?
+  providerRequestId String?   @map("provider_request_id")
+  costCredits       Float?    @map("cost_credits")
+  completedAt       DateTime? @map("completed_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  scriptPackage ScriptPackage  @relation(fields: [scriptPackageId], references: [id], onDelete: Cascade)
+  captions      CaptionTrack[]
+
+  @@index([scriptPackageId])
+  @@index([status])
+  @@map("voice_renders")
+}
+
+// ---------------------------------------------------------------------------
+// CaptionTrack
+// ---------------------------------------------------------------------------
+model CaptionTrack {
+  id              String    @id @default(cuid())
+  scriptPackageId String    @unique @map("script_package_id")
+  voiceRenderId   String?   @map("voice_render_id")
+  sourceType      String?   @map("source_type")
+  srtPath         String?   @map("srt_path")
+  vttPath         String?   @map("vtt_path")
+  timingJson      String?   @map("timing_json")
+  wordCount       Int?      @map("word_count")
+  status          String    @default("PENDING")
+  provider        String?
+  completedAt     DateTime? @map("completed_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  scriptPackage ScriptPackage @relation(fields: [scriptPackageId], references: [id], onDelete: Cascade)
+  voiceRender   VoiceRender?  @relation(fields: [voiceRenderId], references: [id], onDelete: SetNull)
+
+  @@index([scriptPackageId])
+  @@index([voiceRenderId])
+  @@map("caption_tracks")
+}
+
+// ---------------------------------------------------------------------------
+// VideoProject
+// ---------------------------------------------------------------------------
+model VideoProject {
+  id              String   @id @default(cuid())
+  channelId       String   @map("channel_id")
+  scriptPackageId String?  @unique @map("script_package_id")
+  title           String
+  status          String   @default("PENDING_ASSETS")
+  renderSpecJson  String?  @map("render_spec_json")
+  previewFilePath String?  @map("preview_file_path")
+  exportFilePath  String?  @map("export_file_path")
+  durationSeconds Float?   @map("duration_seconds")
+  resolution      String?
+  aspectRatio     String?  @map("aspect_ratio")
+  frameRate       Float?   @map("frame_rate")
+  fileSizeBytes   Int?     @map("file_size_bytes")
+  notes           String?
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  channel        Channel             @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  scriptPackage  ScriptPackage?      @relation("VideoProjectScript", fields: [scriptPackageId], references: [id], onDelete: SetNull)
+  thumbnails     ThumbnailVariant[]
+  metadata       MetadataPackage?
+  qaRuns         QARun[]
+  publishPackage PublishPackage?
+  analytics      AnalyticsSnapshot[]
+
+  @@index([channelId])
+  @@index([status])
+  @@map("video_projects")
+}
+
+// ---------------------------------------------------------------------------
+// ThumbnailVariant
+// ---------------------------------------------------------------------------
+model ThumbnailVariant {
+  id              String   @id @default(cuid())
+  videoProjectId  String   @map("video_project_id")
+  variantLabel    String   @map("variant_label")
+  imagePath       String?  @map("image_path")
+  prompt          String?
+  provider        String?
+  readabilityScore Float?  @map("readability_score")
+  similarityScore Float?   @map("similarity_score")
+  width           Int?
+  height          Int?
+  format          String?
+  fileSizeBytes   Int?     @map("file_size_bytes")
+  isSelected      Boolean  @default(false) @map("is_selected")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  videoProject VideoProject @relation(fields: [videoProjectId], references: [id], onDelete: Cascade)
+
+  @@index([videoProjectId])
+  @@map("thumbnail_variants")
+}
+
+// ---------------------------------------------------------------------------
+// MetadataPackage
+// ---------------------------------------------------------------------------
+model MetadataPackage {
+  id                 String    @id @default(cuid())
+  videoProjectId     String    @unique @map("video_project_id")
+  titlesJson         String?   @map("titles_json")
+  title              String
+  descriptionsJson   String?   @map("descriptions_json")
+  description        String?
+  hashtagsJson       String?   @map("hashtags_json")
+  tags               String?
+  pinnedComment      String?   @map("pinned_comment")
+  riskNotesJson      String?   @map("risk_notes_json")
+  categoryId         String?   @map("category_id")
+  language           String?   @default("en")
+  madeForKids        Boolean   @default(false) @map("made_for_kids")
+  visibility         String    @default("private")
+  scheduledPublishAt DateTime? @map("scheduled_publish_at")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  videoProject VideoProject @relation(fields: [videoProjectId], references: [id], onDelete: Cascade)
+
+  @@index([videoProjectId])
+  @@map("metadata_packages")
+}
+
+// ---------------------------------------------------------------------------
+// QARun
+// ---------------------------------------------------------------------------
+model QARun {
+  id                  String    @id @default(cuid())
+  videoProjectId      String    @map("video_project_id")
+  jobRunId            String?   @map("job_run_id")
+  decision            String?
+  overallScore        Float?    @map("overall_score")
+  originalityRiskScore Float?   @map("originality_risk_score")
+  reusedRiskScore     Float?    @map("reused_risk_score")
+  technicalRiskScore  Float?    @map("technical_risk_score")
+  audioScore          Float?    @map("audio_score")
+  captionSyncScore    Float?    @map("caption_sync_score")
+  visualScore         Float?    @map("visual_score")
+  durationScore       Float?    @map("duration_score")
+  reasonCodesJson     String?   @map("reason_codes_json")
+  reportJson          String?   @map("report_json")
+  reviewerNotes       String?   @map("reviewer_notes")
+  reviewedAt          DateTime? @map("reviewed_at")
+  completedAt         DateTime? @map("completed_at")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  videoProject VideoProject @relation(fields: [videoProjectId], references: [id], onDelete: Cascade)
+
+  @@index([videoProjectId])
+  @@index([decision])
+  @@index([createdAt])
+  @@map("qa_runs")
+}
+
+// ---------------------------------------------------------------------------
+// PublishPackage
+// ---------------------------------------------------------------------------
+model PublishPackage {
+  id               String    @id @default(cuid())
+  videoProjectId   String    @unique @map("video_project_id")
+  exportFolderPath String?   @map("export_folder_path")
+  videoFilePath    String?   @map("video_file_path")
+  thumbnailFilePath String?  @map("thumbnail_file_path")
+  metadataJsonPath String?   @map("metadata_json_path")
+  captionsPath     String?   @map("captions_path")
+  approvalStatus   String?   @map("approval_status")
+  approvedBy       String?   @map("approved_by")
+  approvedAt       DateTime? @map("approved_at")
+  manualUploadNotes String?  @map("manual_upload_notes")
+  status           String    @default("PENDING")
+  youtubeVideoId   String?   @map("youtube_video_id")
+  uploadedAt       DateTime? @map("uploaded_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  videoProject VideoProject @relation(fields: [videoProjectId], references: [id], onDelete: Cascade)
+
+  @@index([youtubeVideoId])
+  @@map("publish_packages")
+}
+
+// ---------------------------------------------------------------------------
+// AnalyticsSnapshot
+// ---------------------------------------------------------------------------
+model AnalyticsSnapshot {
+  id                         String   @id @default(cuid())
+  videoProjectId             String   @map("video_project_id")
+  channelId                  String   @map("channel_id")
+  snapshotDate               DateTime @map("snapshot_date")
+  views                      Int      @default(0)
+  likes                      Int      @default(0)
+  comments                   Int      @default(0)
+  shares                     Int      @default(0)
+  subscribersGained          Int      @default(0) @map("subscribers_gained")
+  watchTimeSeconds           Float?   @map("watch_time_seconds")
+  averageViewDurationSeconds Float?   @map("average_view_duration_seconds")
+  averageViewPercentage      Float?   @map("average_view_percentage")
+  impressions                Int?
+  ctr                        Float?
+  revenueUsd                 Float?   @map("revenue_usd")
+  rawJson                    String?  @map("raw_json")
+  createdAt                  DateTime @default(now()) @map("created_at")
+
+  videoProject VideoProject @relation(fields: [videoProjectId], references: [id], onDelete: Cascade)
+  channel      Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@index([videoProjectId])
+  @@index([channelId])
+  @@index([snapshotDate])
+  @@map("analytics_snapshots")
+}
+
+// ---------------------------------------------------------------------------
+// JobRun
+// ---------------------------------------------------------------------------
+model JobRun {
+  id               String    @id @default(cuid())
+  jobType          String    @map("job_type")
+  status           String    @default("QUEUED")
+  entityType       String?   @map("entity_type")
+  entityId         String?   @map("entity_id")
+  inputJson        String?   @map("input_json")
+  resultId         String?   @map("result_id")
+  resultJson       String?   @map("result_json")
+  errorCode        String?   @map("error_code")
+  errorMessage     String?   @map("error_message")
+  errorDetailsJson String?   @map("error_details_json")
+  logs             String?
+  queuedAt         DateTime  @default(now()) @map("queued_at")
+  startedAt        DateTime? @map("started_at")
+  completedAt      DateTime? @map("completed_at")
+  durationMs       Int?      @map("duration_ms")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  @@index([jobType])
+  @@index([status])
+  @@index([entityId])
+  @@index([queuedAt])
+  @@map("job_runs")
+}

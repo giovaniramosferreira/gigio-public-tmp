@@ -65,7 +65,7 @@ Open `.env.local` in a text editor and set each variable as described below.
 
 ```env
 # Database
-DATABASE_URL="file:./data/db/darktube.db"
+DATABASE_URL="file:../data/db/darktube.db"
 
 # LLM Provider — required for all generation tasks
 ANTHROPIC_API_KEY=your_key_here
