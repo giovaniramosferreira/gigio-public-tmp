@@ -118,6 +118,8 @@ export default function IdeasPage() {
       return "Chave de API inválida. Verifique o ANTHROPIC_API_KEY no .env.local.";
     if (raw.includes("429") || raw.includes("rate_limit"))
       return "Limite de requisições atingido. Aguarde alguns segundos e tente novamente.";
+    if (raw.includes("timed out") || raw.includes("timeout") || raw.includes("TIMEOUT"))
+      return "A geração de ideias demorou mais que o esperado. Tente novamente — normalmente funciona na segunda tentativa.";
     if (raw.includes("500") || raw.includes("502") || raw.includes("503"))
       return "O serviço de IA está temporariamente indisponível. Tente novamente em instantes.";
     if (raw.includes("interrompida") || raw.includes("interrupted"))

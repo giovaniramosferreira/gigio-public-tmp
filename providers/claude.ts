@@ -48,7 +48,7 @@ export class ClaudeProvider implements LLMProvider {
             content: m.content,
           })),
         }),
-        60000,
+        180000,
         "claude.generate",
       ),
     );

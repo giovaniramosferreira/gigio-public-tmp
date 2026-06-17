@@ -12,7 +12,7 @@ const bodySchema = z.object({
   seedPhrases: z.union([z.string(), z.array(z.string())]).optional().transform(
     (v) => (Array.isArray(v) ? v.join(", ") : v),
   ),
-  count: z.number().int().min(25).max(60).optional(),
+  count: z.number().int().min(8).max(30).optional(),
 });
 
 /** POST /api/ideas/discover — enqueue a discovery job. Returns a jobId. */

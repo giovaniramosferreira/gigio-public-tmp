@@ -28,7 +28,7 @@ export interface DiscoverResult {
  * SCORED ideas ready for selection.
  */
 export async function discoverIdeas(input: DiscoverInput): Promise<DiscoverResult> {
-  const count = Math.max(25, input.count ?? 25);
+  const count = Math.max(10, input.count ?? 10);
   const channel = await channelRepo.findById(input.channelId);
   if (!channel) throw new Error(`Channel ${input.channelId} not found`);
 
