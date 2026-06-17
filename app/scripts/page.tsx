@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { FileText } from "lucide-react";
 
 import { PageHeader } from "@/components/page-header";
@@ -118,7 +119,10 @@ export default function ScriptsPage() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
 
-  const [action, setAction] = useState<"critic" | "rewrite" | null>(null);
+  const [action, setAction] = useState<"critic" | "rewrite" | "approve" | null>(
+    null,
+  );
+  const [approved, setApproved] = useState(false);
 
   const loadList = useCallback(async () => {
     setListLoading(true);
@@ -152,6 +156,7 @@ export default function ScriptsPage() {
   }, [loadList]);
 
   useEffect(() => {
+    setApproved(false);
     if (selectedId) void loadDetail(selectedId);
   }, [selectedId, loadDetail]);
 
@@ -191,8 +196,28 @@ export default function ScriptsPage() {
     }
   }
 
+  async function handleApprove() {
+    if (!selectedId) return;
+    setAction("approve");
+    setDetailError(null);
+    try {
+      const job = await runJob(`/api/scripts/${selectedId}/approve`);
+      if (job.status === "FAILED") {
+        throw new Error(job.error?.message ?? "Approve job failed");
+      }
+      setApproved(true);
+      await loadDetail(selectedId);
+      await loadList();
+    } catch (e) {
+      setDetailError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setAction(null);
+    }
+  }
+
   const critique = detail?.criticNotes?.critique;
   const originality = detail?.criticNotes?.originality;
+  const isBlocked = detail?.script.status?.toUpperCase() === "BLOCKED";
 
   return (
     <>
@@ -299,11 +324,25 @@ export default function ScriptsPage() {
                       </Button>
                       <Button
                         size="sm"
+                        variant="outline"
                         onClick={handleRewrite}
                         disabled={action !== null}
                       >
                         {action === "rewrite" ? <Spinner /> : null}
                         Rewrite
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={handleApprove}
+                        disabled={action !== null || isBlocked}
+                        title={
+                          isBlocked
+                            ? "Script is BLOCKED (originality) and cannot enter production"
+                            : undefined
+                        }
+                      >
+                        {action === "approve" ? <Spinner /> : null}
+                        Approve for Production
                       </Button>
                     </div>
                   </div>
@@ -312,6 +351,17 @@ export default function ScriptsPage() {
                   {detailError ? (
                     <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
                       {detailError}
+                    </div>
+                  ) : null}
+                  {approved ? (
+                    <div className="rounded-md border border-success/50 bg-success/10 p-3 text-sm text-success">
+                      Approved for production. A video project was created.{" "}
+                      <Link
+                        href="/production"
+                        className="font-medium underline underline-offset-4"
+                      >
+                        Open Production Monitor
+                      </Link>
                     </div>
                   ) : null}
                   {detail.script.thesis ? (
