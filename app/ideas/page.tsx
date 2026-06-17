@@ -111,7 +111,7 @@ export default function IdeasPage() {
   async function handleDiscover() {
     setError(null);
     setDiscovering(true);
-    setStatusLine("Generating ideas...");
+    setStatusLine("Gerando ideias...");
     try {
       const seeds = seedPhrases
         .split(",")
@@ -122,9 +122,9 @@ export default function IdeasPage() {
         seedPhrases: seeds.length > 0 ? seeds : undefined,
       });
       if (job.status === "FAILED") {
-        throw new Error(job.error?.message ?? "Discovery job failed");
+        throw new Error(job.error?.message ?? "Job de descoberta falhou");
       }
-      setStatusLine("Ideas generated.");
+      setStatusLine("Ideias geradas.");
       await loadIdeas();
     } catch (e) {
       setStatusLine(null);
@@ -153,7 +153,7 @@ export default function IdeasPage() {
     try {
       const job = await runJob("/api/scripts/generate", { ideaId: id });
       if (job.status === "FAILED") {
-        throw new Error(job.error?.message ?? "Script generation failed");
+        throw new Error(job.error?.message ?? "Geração de roteiro falhou");
       }
       router.push("/scripts");
     } catch (e) {
@@ -169,18 +169,18 @@ export default function IdeasPage() {
   return (
     <>
       <PageHeader
-        title="Idea Discovery"
-        description="Generate and rank original topic ideas from editorial pillars."
+        title="Descoberta de Ideias"
+        description="Gere e classifique ideias de tópicos originais a partir dos pilares editoriais."
       />
 
       <Card>
         <CardHeader>
-          <CardTitle>Discover topics</CardTitle>
+          <CardTitle>Descobrir tópicos</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">
-              <Label htmlFor="pillar">Pillar</Label>
+              <Label htmlFor="pillar">Pilar</Label>
               <select
                 id="pillar"
                 value={pillarId}
@@ -188,7 +188,7 @@ export default function IdeasPage() {
                 disabled={discovering}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <option value="">Any pillar</option>
+                <option value="">Qualquer pilar</option>
                 {pillars.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
@@ -197,10 +197,10 @@ export default function IdeasPage() {
               </select>
             </div>
             <div className="space-y-1.5 sm:col-span-2">
-              <Label htmlFor="seeds">Seed phrases (comma-separated)</Label>
+              <Label htmlFor="seeds">Frases-semente (separadas por vírgula)</Label>
               <Input
                 id="seeds"
-                placeholder="e.g. model collapse, silent data drift"
+                placeholder="ex: colapso de modelo, deriva silenciosa de dados"
                 value={seedPhrases}
                 onChange={(e) => setSeedPhrases(e.target.value)}
                 disabled={discovering}
@@ -210,7 +210,7 @@ export default function IdeasPage() {
           <div className="flex items-center gap-3">
             <Button onClick={handleDiscover} disabled={discovering}>
               {discovering ? <Spinner /> : <Lightbulb className="h-4 w-4" />}
-              Discover Ideas
+              Descobrir Ideias
             </Button>
             {statusLine ? (
               <span className="text-sm text-muted-foreground">{statusLine}</span>
@@ -226,7 +226,7 @@ export default function IdeasPage() {
 
       {ideasLoading ? (
         <div className="flex items-center gap-2 py-12 text-sm text-muted-foreground">
-          <Spinner /> Loading ideas...
+          <Spinner /> Carregando ideias...
         </div>
       ) : sortedIdeas.length === 0 ? (
         <Card>
@@ -234,8 +234,8 @@ export default function IdeasPage() {
             <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
               <Lightbulb className="h-8 w-8 text-muted-foreground" />
               <p className="max-w-md text-sm text-muted-foreground">
-                No ideas generated yet. Pick a pillar and run discovery to
-                populate a ranked backlog of candidate topics.
+                Nenhuma ideia gerada ainda. Escolha um pilar e execute a descoberta para
+                popular um backlog classificado de tópicos candidatos.
               </p>
             </div>
           </CardContent>
@@ -263,7 +263,7 @@ export default function IdeasPage() {
                         {idea.totalScore ?? "-"}
                       </div>
                       <div className="text-[11px] text-muted-foreground">
-                        score
+                        pontuação
                       </div>
                     </div>
                   </div>
@@ -273,14 +273,14 @@ export default function IdeasPage() {
                     <p className="text-sm text-muted-foreground">{idea.angle}</p>
                   ) : null}
                   <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                    <ScoreBar label="Novelty" value={b.novelty} />
+                    <ScoreBar label="Novidade" value={b.novelty} />
                     <ScoreBar
-                      label="Consequence"
+                      label="Consequência"
                       value={b.consequenceStrength}
                     />
-                    <ScoreBar label="Policy Safety" value={b.policySafety} />
+                    <ScoreBar label="Segurança de Política" value={b.policySafety} />
                     <ScoreBar
-                      label="Retention"
+                      label="Retenção"
                       value={b.retentionPotential}
                     />
                   </div>
@@ -292,7 +292,7 @@ export default function IdeasPage() {
                       disabled={busy}
                     >
                       {busy ? <Spinner /> : null}
-                      Select
+                      Selecionar
                     </Button>
                     <Button
                       size="sm"
@@ -300,7 +300,7 @@ export default function IdeasPage() {
                       disabled={busy}
                     >
                       {busy ? <Spinner /> : null}
-                      Generate Script
+                      Gerar Roteiro
                     </Button>
                   </div>
                 </CardContent>

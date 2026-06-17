@@ -6,7 +6,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "DarkTube OS",
   description:
-    "Local-first production console for a faceless YouTube Shorts channel exploring AI's hidden side effects.",
+    "Console de produção local-first para um canal de YouTube Shorts sem rosto explorando os efeitos colaterais ocultos da IA.",
 };
 
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="pt-BR" className="dark">
       <body className="min-h-screen bg-background text-foreground antialiased">
         <div className="flex h-screen overflow-hidden">
           <aside className="w-60 shrink-0 border-r border-border bg-card/40">

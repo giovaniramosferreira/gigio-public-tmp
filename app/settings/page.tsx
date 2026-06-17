@@ -91,29 +91,29 @@ export default function SettingsPage() {
   }, [runHealthCheck]);
 
   function providerBadge(p: Provider) {
-    if (!p.configured) return <StatusBadge status="Not configured" />;
-    if (p.healthy) return <StatusBadge status="Healthy" />;
-    return <StatusBadge status="Unhealthy" />;
+    if (!p.configured) return <StatusBadge status="Não configurado" />;
+    if (p.healthy) return <StatusBadge status="Saudável" />;
+    return <StatusBadge status="Com problema" />;
   }
 
   return (
     <>
       <PageHeader
-        title="Settings"
-        description="Channel configuration and provider health for the DarkTube OS pipeline."
+        title="Configurações"
+        description="Configuração do canal e saúde dos provedores para o pipeline DarkTube OS."
       />
 
       <Card>
         <CardHeader>
-          <CardTitle>Channel Configuration</CardTitle>
+          <CardTitle>Configuração do Canal</CardTitle>
           <CardDescription>
-            The currently active channel and its editorial pillars (read-only).
+            O canal atualmente ativo e seus pilares editoriais (somente leitura).
           </CardDescription>
         </CardHeader>
         <CardContent>
           {channelLoading ? (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Spinner /> Loading channel...
+              <Spinner /> Carregando canal...
             </div>
           ) : channelError ? (
             <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
@@ -121,23 +121,23 @@ export default function SettingsPage() {
             </div>
           ) : !channel ? (
             <p className="text-sm text-muted-foreground">
-              No active channel configured.
+              Nenhum canal ativo configurado.
             </p>
           ) : (
             <div className="space-y-4">
               <dl className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div>
-                  <dt className="text-xs text-muted-foreground">Name</dt>
+                  <dt className="text-xs text-muted-foreground">Nome</dt>
                   <dd className="text-sm font-medium">{channel.name}</dd>
                 </div>
                 <div>
-                  <dt className="text-xs text-muted-foreground">Niche</dt>
+                  <dt className="text-xs text-muted-foreground">Nicho</dt>
                   <dd className="text-sm font-medium">
                     {channel.niche ?? "-"}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-xs text-muted-foreground">Review Mode</dt>
+                  <dt className="text-xs text-muted-foreground">Modo de Revisão</dt>
                   <dd className="text-sm font-medium">
                     {channel.reviewMode ?? "-"}
                   </dd>
@@ -145,10 +145,10 @@ export default function SettingsPage() {
               </dl>
               <Separator />
               <div>
-                <p className="mb-2 text-xs text-muted-foreground">Pillars</p>
+                <p className="mb-2 text-xs text-muted-foreground">Pilares</p>
                 {channel.pillars.length === 0 ? (
                   <p className="text-sm text-muted-foreground">
-                    No pillars defined.
+                    Nenhum pilar definido.
                   </p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
@@ -172,9 +172,9 @@ export default function SettingsPage() {
         <CardHeader>
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-1.5">
-              <CardTitle>Providers</CardTitle>
+              <CardTitle>Provedores</CardTitle>
               <CardDescription>
-                Configured LLM, TTS, and image providers and their health.
+                Provedores de LLM, TTS e imagem configurados e sua saúde.
               </CardDescription>
             </div>
             <Button
@@ -183,7 +183,7 @@ export default function SettingsPage() {
               disabled={providersLoading}
             >
               {providersLoading ? <Spinner /> : null}
-              Run health check
+              Verificar saúde
             </Button>
           </div>
         </CardHeader>
@@ -194,11 +194,11 @@ export default function SettingsPage() {
             </div>
           ) : providersLoading && providers.length === 0 ? (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Spinner /> Checking providers...
+              <Spinner /> Verificando provedores...
             </div>
           ) : checked && providers.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              No providers reported.
+              Nenhum provedor reportado.
             </p>
           ) : (
             <ul className="divide-y divide-border">

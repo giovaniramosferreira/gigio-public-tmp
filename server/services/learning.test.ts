@@ -34,7 +34,7 @@ describe("computeInsights", () => {
     listLatestForChannel.mockResolvedValue([]);
     const insights = await computeInsights("chan");
     expect(insights.sampleSize).toBe(0);
-    expect(insights.recommendations[0]).toMatch(/No analytics yet/);
+    expect(insights.recommendations[0]).toMatch(/Nenhuma análise/);
   });
 
   it("ranks the strongest pillar by average views", async () => {
@@ -50,9 +50,9 @@ describe("computeInsights", () => {
 
   it("detects title patterns present in the data", async () => {
     listLatestForChannel.mockResolvedValue([
-      snapshot({ videoId: "v1", title: "Why X Happens", pillar: "Labor", duration: 35, views: 500, pct: 70 }),
+      snapshot({ videoId: "v1", title: "Por que X acontece", pillar: "Labor", duration: 35, views: 500, pct: 70 }),
     ]);
     const insights = await computeInsights("chan");
-    expect(insights.titlePatterns.some((p) => p.pattern.includes("Why"))).toBe(true);
+    expect(insights.titlePatterns.some((p) => p.pattern.includes("Por que"))).toBe(true);
   });
 });

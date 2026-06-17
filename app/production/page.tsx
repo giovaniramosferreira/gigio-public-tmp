@@ -87,11 +87,11 @@ type Step =
 
 const STEPS: { step: Step; label: string }[] = [
   { step: "assets", label: "Assets" },
-  { step: "voice", label: "Voice" },
-  { step: "captions", label: "Captions" },
-  { step: "assemble", label: "Assemble" },
-  { step: "thumbnails", label: "Thumbnails" },
-  { step: "metadata", label: "Metadata" },
+  { step: "voice", label: "Voz" },
+  { step: "captions", label: "Legendas" },
+  { step: "assemble", label: "Montar" },
+  { step: "thumbnails", label: "Miniaturas" },
+  { step: "metadata", label: "Metadados" },
   { step: "qa", label: "QA" },
 ];
 
@@ -134,7 +134,7 @@ export default function ProductionPage() {
       const res = await apiGet<{ jobs: JobItem[] }>("/api/jobs?limit=20");
       setJobs(res.jobs ?? []);
     } catch {
-      // Non-fatal; jobs panel just stays empty.
+      // Não fatal; painel de jobs permanece vazio.
     }
   }, []);
 
@@ -168,7 +168,7 @@ export default function ProductionPage() {
     try {
       const job = await runJob(`/api/videos/${selectedId}/${step}`);
       if (job.status === "FAILED") {
-        throw new Error(job.error?.message ?? `${step} job failed`);
+        throw new Error(job.error?.message ?? `Job ${step} falhou`);
       }
       await loadDetail(selectedId);
       await loadVideos();
@@ -184,13 +184,13 @@ export default function ProductionPage() {
   return (
     <>
       <PageHeader
-        title="Production Job Monitor"
-        description="Run the per-stage production pipeline and track render jobs."
+        title="Monitor de Jobs de Produção"
+        description="Execute o pipeline de produção por etapa e acompanhe os jobs de renderização."
       />
 
       {listLoading ? (
         <div className="flex items-center gap-2 py-12 text-sm text-muted-foreground">
-          <Spinner /> Loading video projects...
+          <Spinner /> Carregando projetos de vídeo...
         </div>
       ) : listError ? (
         <div className="rounded-md border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
@@ -202,9 +202,9 @@ export default function ProductionPage() {
             <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
               <Clapperboard className="h-8 w-8 text-muted-foreground" />
               <p className="max-w-md text-sm text-muted-foreground">
-                No video projects yet. Approving a script in{" "}
-                <span className="font-medium">/scripts</span> (Approve for
-                Production) creates a video project that appears here.
+                Nenhum projeto de vídeo ainda. Aprovar um roteiro em{" "}
+                <span className="font-medium">/scripts</span> (Aprovar para
+                Produção) cria um projeto de vídeo que aparece aqui.
               </p>
             </div>
           </CardContent>
@@ -214,8 +214,8 @@ export default function ProductionPage() {
           <div className="space-y-4">
             <Card className="h-fit">
               <CardHeader>
-                <CardTitle>Video Projects</CardTitle>
-                <CardDescription>Select a project to run steps.</CardDescription>
+                <CardTitle>Projetos de Vídeo</CardTitle>
+                <CardDescription>Selecione um projeto para executar etapas.</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-1">
@@ -254,11 +254,11 @@ export default function ProductionPage() {
 
             <Card className="h-fit">
               <CardHeader>
-                <CardTitle>Recent Jobs</CardTitle>
+                <CardTitle>Jobs Recentes</CardTitle>
               </CardHeader>
               <CardContent>
                 {jobs.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No jobs yet.</p>
+                  <p className="text-sm text-muted-foreground">Nenhum job ainda.</p>
                 ) : (
                   <ul className="space-y-2">
                     {jobs.map((j) => (
@@ -292,14 +292,14 @@ export default function ProductionPage() {
                   <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
                     <Clapperboard className="h-8 w-8 text-muted-foreground" />
                     <p className="text-sm text-muted-foreground">
-                      Select a video project to run its production pipeline.
+                      Selecione um projeto de vídeo para executar seu pipeline de produção.
                     </p>
                   </div>
                 </CardContent>
               </Card>
             ) : detailLoading && !detail ? (
               <div className="flex items-center gap-2 py-12 text-sm text-muted-foreground">
-                <Spinner /> Loading project...
+                <Spinner /> Carregando projeto...
               </div>
             ) : detailError && !detail ? (
               <div className="rounded-md border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
@@ -359,7 +359,7 @@ export default function ProductionPage() {
                                 disabled={runningStep !== null}
                               >
                                 {running ? <Spinner /> : null}
-                                Run
+                                Executar
                               </Button>
                             </div>
                           );
@@ -372,13 +372,13 @@ export default function ProductionPage() {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-base">Asset Plan</CardTitle>
+                      <CardTitle className="text-base">Plano de Assets</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-1 text-sm">
                       {detail.assetPlan ? (
                         <>
                           <div className="flex justify-between">
-                            <span className="text-muted-foreground">Scenes</span>
+                            <span className="text-muted-foreground">Cenas</span>
                             <span className="tabular-nums">
                               {detail.assetPlan.totalScenes ?? "-"}
                             </span>
@@ -390,21 +390,21 @@ export default function ProductionPage() {
                           {detail.assetPlan.provider ? (
                             <div className="flex justify-between">
                               <span className="text-muted-foreground">
-                                Provider
+                                Provedor
                               </span>
                               <span>{detail.assetPlan.provider}</span>
                             </div>
                           ) : null}
                         </>
                       ) : (
-                        <p className="text-muted-foreground">No asset plan yet.</p>
+                        <p className="text-muted-foreground">Nenhum plano de assets ainda.</p>
                       )}
                     </CardContent>
                   </Card>
 
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-base">Captions</CardTitle>
+                      <CardTitle className="text-base">Legendas</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-1 text-sm">
                       {detail.captions ? (
@@ -414,14 +414,14 @@ export default function ProductionPage() {
                             <span>{detail.captions.status ?? "-"}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-muted-foreground">Words</span>
+                            <span className="text-muted-foreground">Palavras</span>
                             <span className="tabular-nums">
                               {detail.captions.wordCount ?? "-"}
                             </span>
                           </div>
                         </>
                       ) : (
-                        <p className="text-muted-foreground">No captions yet.</p>
+                        <p className="text-muted-foreground">Nenhuma legenda ainda.</p>
                       )}
                     </CardContent>
                   </Card>
@@ -430,13 +430,13 @@ export default function ProductionPage() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-base">
-                      Thumbnails ({detail.thumbnails.length})
+                      Miniaturas ({detail.thumbnails.length})
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     {detail.thumbnails.length === 0 ? (
                       <p className="text-sm text-muted-foreground">
-                        No thumbnails generated yet.
+                        Nenhuma miniatura gerada ainda.
                       </p>
                     ) : (
                       <ul className="space-y-1 text-sm">
@@ -447,16 +447,16 @@ export default function ProductionPage() {
                           >
                             <span className="font-medium">{t.variantLabel}</span>
                             {t.isSelected ? (
-                              <Badge variant="success">selected</Badge>
+                              <Badge variant="success">selecionada</Badge>
                             ) : null}
                             <span className="text-muted-foreground">
-                              readability{" "}
+                              legibilidade{" "}
                               {t.readabilityScore != null
                                 ? t.readabilityScore.toFixed(2)
                                 : "-"}
                             </span>
                             <span className="text-muted-foreground">
-                              similarity{" "}
+                              similaridade{" "}
                               {t.similarityScore != null
                                 ? t.similarityScore.toFixed(2)
                                 : "-"}

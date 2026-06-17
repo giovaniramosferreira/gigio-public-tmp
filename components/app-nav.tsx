@@ -23,14 +23,14 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/ideas", label: "Ideas", icon: Lightbulb },
-  { href: "/scripts", label: "Scripts", icon: FileText },
-  { href: "/production", label: "Production", icon: Clapperboard },
-  { href: "/review", label: "Review", icon: CheckCircle },
-  { href: "/export", label: "Export", icon: Package },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/", label: "Painel", icon: LayoutDashboard },
+  { href: "/ideas", label: "Ideias", icon: Lightbulb },
+  { href: "/scripts", label: "Roteiros", icon: FileText },
+  { href: "/production", label: "Produção", icon: Clapperboard },
+  { href: "/review", label: "Revisão", icon: CheckCircle },
+  { href: "/export", label: "Exportar", icon: Package },
+  { href: "/analytics", label: "Análises", icon: BarChart3 },
+  { href: "/settings", label: "Configurações", icon: Settings },
 ];
 
 function isActiveRoute(pathname: string, href: string): boolean {

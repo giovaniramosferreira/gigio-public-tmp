@@ -3,27 +3,27 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 /**
- * Seeds one default channel for the AI side-effects thesis, plus the eight
- * editorial pillars from the spec (section 9.2). Idempotent: re-running updates
- * the existing channel/pillars by slug/name rather than duplicating them.
+ * Semeie um canal padrão para a tese de efeitos colaterais da IA, mais os oito
+ * pilares editoriais da especificação (seção 9.2). Idempotente: re-executar atualiza
+ * o canal/pilares existentes por slug/nome em vez de duplicá-los.
  */
 
-const CHANNEL_SLUG = "ai-side-effects";
+const CHANNEL_SLUG = "efeitos-colaterais-da-ia";
 
 const TONE_PROFILE = {
-  voice: "intelligent but clear",
-  mood: "slightly unsettling, not sensationalist",
-  signal: "high-signal, low-hype",
-  hooks: "memorable without clickbait fraud",
-  narration: "editorial, not robotic",
+  voice: "inteligente mas claro",
+  mood: "levemente perturbador, não sensacionalista",
+  signal: "alto sinal, baixo hype",
+  hooks: "memorável sem fraude de clickbait",
+  narration: "editorial, não robótico",
 };
 
 const BANNED_PATTERNS = [
-  "AI is changing everything",
-  "top AI tools",
-  "generic AI news roundup",
-  "templated slideshow voiceover",
-  "vague claim without concrete consequence",
+  "A IA está mudando tudo",
+  "melhores ferramentas de IA",
+  "resumo genérico de notícias de IA",
+  "narração de slideshow padronizado",
+  "afirmação vaga sem consequência concreta",
 ];
 
 const RENDER_DEFAULTS = {
@@ -36,59 +36,59 @@ const RENDER_DEFAULTS = {
 
 const PILLARS = [
   {
-    name: "Labor and Work Side Effects",
+    name: "Efeitos Colaterais no Trabalho e Emprego",
     description:
-      "Invisible labor displacement, role hollowing, and the quiet reshaping of how and whether people work.",
-    keywords: "labor,jobs,automation,displacement,gig,white-collar,deskilling",
+      "Deslocamento invisível de trabalho, esvaziamento de funções e a reconfiguração silenciosa de como e se as pessoas trabalham.",
+    keywords: "trabalho,empregos,automação,deslocamento,gig,colarinho-branco,desqualificação",
     weight: 0.7,
   },
   {
-    name: "Education and Cognition Side Effects",
+    name: "Efeitos Colaterais na Educação e Cognição",
     description:
-      "Cognitive offloading, memory erosion, dependency in learning, and distorted educational incentives.",
-    keywords: "education,cognition,memory,learning,offloading,critical-thinking",
+      "Transferência cognitiva, erosão da memória, dependência no aprendizado e incentivos educacionais distorcidos.",
+    keywords: "educação,cognição,memória,aprendizado,transferência,pensamento-crítico",
     weight: 0.7,
   },
   {
-    name: "Media, Truth, and Persuasion Side Effects",
+    name: "Efeitos Colaterais na Mídia, Verdade e Persuasão",
     description:
-      "AI-fueled persuasion, synthetic media, trust collapse, and manufactured consensus.",
-    keywords: "media,truth,persuasion,deepfakes,misinformation,manipulation",
+      "Persuasão alimentada por IA, mídia sintética, colapso de confiança e consenso fabricado.",
+    keywords: "mídia,verdade,persuasão,deepfakes,desinformação,manipulação",
     weight: 0.75,
   },
   {
-    name: "Relationships and Social Trust Side Effects",
+    name: "Efeitos Colaterais nos Relacionamentos e Confiança Social",
     description:
-      "Erosion of interpersonal trust, parasocial AI bonds, and the reshaping of human connection.",
-    keywords: "relationships,trust,loneliness,companions,social,connection",
+      "Erosão da confiança interpessoal, vínculos parassociais com IA e a reconfiguração da conexão humana.",
+    keywords: "relacionamentos,confiança,solidão,companheiros,social,conexão",
     weight: 0.6,
   },
   {
-    name: "Economic Concentration and Infrastructure Side Effects",
+    name: "Efeitos Colaterais na Concentração Econômica e Infraestrutura",
     description:
-      "Compute and infrastructure concentration, geopolitical leverage, and systemic fragility.",
-    keywords: "economy,infrastructure,compute,concentration,geopolitics,monopoly",
+      "Concentração de computação e infraestrutura, alavancagem geopolítica e fragilidade sistêmica.",
+    keywords: "economia,infraestrutura,computação,concentração,geopolítica,monopólio",
     weight: 0.6,
   },
   {
-    name: "Law, Compliance, and Governance Side Effects",
+    name: "Efeitos Colaterais em Direito, Conformidade e Governança",
     description:
-      "Legal gray zones, compliance theater, accountability gaps, and governance blind spots.",
-    keywords: "law,compliance,governance,regulation,liability,accountability",
+      "Zonas cinzentas legais, teatro de conformidade, lacunas de responsabilidade e pontos cegos de governança.",
+    keywords: "direito,conformidade,governança,regulação,responsabilidade,accountability",
     weight: 0.55,
   },
   {
-    name: "Creativity and Culture Side Effects",
+    name: "Efeitos Colaterais na Criatividade e Cultura",
     description:
-      "Creative homogenization, cultural flattening, and the economics of synthetic content.",
-    keywords: "creativity,culture,art,homogenization,originality,aesthetics",
+      "Homogeneização criativa, achatamento cultural e a economia do conteúdo sintético.",
+    keywords: "criatividade,cultura,arte,homogeneização,originalidade,estética",
     weight: 0.6,
   },
   {
-    name: "Psychological and Identity Side Effects",
+    name: "Efeitos Colaterais Psicológicos e de Identidade",
     description:
-      "Emotional consequences, identity shifts, agency erosion, and the psychology of delegation.",
-    keywords: "psychology,identity,agency,emotion,wellbeing,self",
+      "Consequências emocionais, mudanças de identidade, erosão da agência e a psicologia da delegação.",
+    keywords: "psicologia,identidade,agência,emoção,bem-estar,eu",
     weight: 0.6,
   },
 ];
@@ -103,13 +103,13 @@ async function main() {
       renderDefaultsJson: JSON.stringify(RENDER_DEFAULTS),
     },
     create: {
-      name: "AI Side Effects",
+      name: "Efeitos Colaterais da IA",
       slug: CHANNEL_SLUG,
       description:
-        "AI is changing the world in ways people are not talking about enough — especially the side effects.",
-      niche: "AI second-order effects and under-discussed consequences",
+        "A IA está mudando o mundo de maneiras que as pessoas não estão discutindo o suficiente — especialmente os efeitos colaterais.",
+      niche: "Efeitos de segunda ordem da IA e consequências pouco discutidas",
       targetAudience:
-        "Curious, intelligent English-speaking viewers interested in technology's hidden costs.",
+        "Espectadores curiosos e inteligentes interessados nos custos ocultos da tecnologia.",
       toneProfileJson: JSON.stringify(TONE_PROFILE),
       bannedPatternsJson: JSON.stringify(BANNED_PATTERNS),
       renderDefaultsJson: JSON.stringify(RENDER_DEFAULTS),
@@ -140,7 +140,7 @@ async function main() {
   });
 
   console.log(
-    `Seeded channel "${channel.name}" (${channel.slug}) with ${pillarCount} editorial pillars.`,
+    `Canal "${channel.name}" (${channel.slug}) semeado com ${pillarCount} pilares editoriais.`,
   );
 }
 

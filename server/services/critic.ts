@@ -12,7 +12,7 @@ import { checkOriginality } from "./originality";
 const logger = log("critic");
 
 const CHANNEL_THESIS =
-  "AI is changing the world in ways people are not talking about enough — especially the side effects.";
+  "A IA está mudando o mundo de maneiras que as pessoas não estão discutindo o suficiente — especialmente os efeitos colaterais.";
 
 /** Run the critic pass (FR-06) over a script and persist the structured critique. */
 export async function critiqueScript(scriptId: string): Promise<{

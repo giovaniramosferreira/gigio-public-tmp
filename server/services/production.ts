@@ -14,7 +14,7 @@ export async function startProduction(scriptId: string): Promise<string> {
   const script = await scriptRepo.findById(scriptId);
   if (!script) throw new Error(`Script ${scriptId} not found`);
   if (script.status === "BLOCKED") {
-    throw new Error("Script is BLOCKED by originality/critic and cannot enter production");
+    throw new Error("Roteiro está BLOQUEADO por originalidade/crítico e não pode entrar em produção");
   }
 
   const existing = await videoRepo.findByScriptId(scriptId);

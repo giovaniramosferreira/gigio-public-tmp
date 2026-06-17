@@ -10,7 +10,7 @@ import { assetPlanSchema } from "./schemas";
 const logger = log("assets");
 
 const VISUAL_IDENTITY =
-  "Restrained, editorial, slightly unsettling. Muted palette, real-world texture, negative space. No glowing-brain/robot/blue-circuit cliches. Visuals carry meaning, not decoration.";
+  "Contido, editorial, levemente perturbador. Paleta suave, textura do mundo real, espaço negativo. Sem clichês de cérebro brilhante/robô/circuito azul. Os visuais carregam significado, não decoração.";
 
 /**
  * Asset direction package (FR-07): generate per-beat visual directions via the
@@ -20,9 +20,9 @@ const VISUAL_IDENTITY =
  */
 export async function generateAssetPlan(videoProjectId: string): Promise<string> {
   const project = await videoRepo.findById(videoProjectId);
-  if (!project?.scriptPackageId) throw new Error("Video project has no script");
+  if (!project?.scriptPackageId) throw new Error("Projeto de vídeo não tem roteiro");
   const script = await scriptRepo.findById(project.scriptPackageId);
-  if (!script) throw new Error("Script not found for project");
+  if (!script) throw new Error("Roteiro não encontrado para o projeto");
 
   const beatPlan = script.beatPlanJson ? JSON.parse(script.beatPlanJson) : [];
 

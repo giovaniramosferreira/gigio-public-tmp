@@ -14,7 +14,7 @@ export const POST = handler(
     const script = await scriptRepo.findById(ctx.params.id);
     if (!script) throw new ApiError("NOT_FOUND", `Script ${ctx.params.id} not found`);
     if (script.status === "BLOCKED") {
-      throw new ApiError("ORIGINALITY_BLOCKED", "Script is BLOCKED and cannot enter production");
+      throw new ApiError("ORIGINALITY_BLOCKED", "Roteiro está BLOQUEADO e não pode entrar em produção");
     }
     const jobId = await enqueueJob(
       JOB_TYPES.PRODUCTION_START,

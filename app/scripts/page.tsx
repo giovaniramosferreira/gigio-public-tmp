@@ -167,7 +167,7 @@ export default function ScriptsPage() {
     try {
       const job = await runJob(`/api/scripts/${selectedId}/critic`);
       if (job.status === "FAILED") {
-        throw new Error(job.error?.message ?? "Critic job failed");
+        throw new Error(job.error?.message ?? "Job do crítico falhou");
       }
       await loadDetail(selectedId);
       await loadList();
@@ -185,7 +185,7 @@ export default function ScriptsPage() {
     try {
       const job = await runJob(`/api/scripts/${selectedId}/rewrite`, {});
       if (job.status === "FAILED") {
-        throw new Error(job.error?.message ?? "Rewrite job failed");
+        throw new Error(job.error?.message ?? "Job de reescrita falhou");
       }
       await loadDetail(selectedId);
       await loadList();
@@ -203,7 +203,7 @@ export default function ScriptsPage() {
     try {
       const job = await runJob(`/api/scripts/${selectedId}/approve`);
       if (job.status === "FAILED") {
-        throw new Error(job.error?.message ?? "Approve job failed");
+        throw new Error(job.error?.message ?? "Job de aprovação falhou");
       }
       setApproved(true);
       await loadDetail(selectedId);
@@ -222,27 +222,27 @@ export default function ScriptsPage() {
   return (
     <>
       <PageHeader
-        title="Script Review"
-        description="Review generated scripts, originality, and critic feedback before production."
+        title="Revisão de Roteiro"
+        description="Revise roteiros gerados, originalidade e feedback do crítico antes da produção."
       />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[20rem_1fr]">
         <Card className="h-fit">
           <CardHeader>
-            <CardTitle>Scripts</CardTitle>
-            <CardDescription>Select a script to review.</CardDescription>
+            <CardTitle>Roteiros</CardTitle>
+            <CardDescription>Selecione um roteiro para revisar.</CardDescription>
           </CardHeader>
           <CardContent>
             {listLoading ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Spinner /> Loading...
+                <Spinner /> Carregando...
               </div>
             ) : listError ? (
               <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
                 {listError}
               </div>
             ) : scripts.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No scripts yet.</p>
+              <p className="text-sm text-muted-foreground">Nenhum roteiro ainda.</p>
             ) : (
               <ul className="space-y-1">
                 {scripts.map((s) => (
@@ -265,7 +265,7 @@ export default function ScriptsPage() {
                         <span>
                           orig {s.originalityScore ?? "-"}
                         </span>
-                        <span>rewrites {s.rewriteCount}</span>
+                        <span>reescritas {s.rewriteCount}</span>
                       </div>
                     </button>
                   </li>
@@ -282,14 +282,14 @@ export default function ScriptsPage() {
                 <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
                   <FileText className="h-8 w-8 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">
-                    Select a script from the list to review its details.
+                    Selecione um roteiro da lista para revisar seus detalhes.
                   </p>
                 </div>
               </CardContent>
             </Card>
           ) : detailLoading && !detail ? (
             <div className="flex items-center gap-2 py-12 text-sm text-muted-foreground">
-              <Spinner /> Loading script...
+              <Spinner /> Carregando roteiro...
             </div>
           ) : detailError && !detail ? (
             <div className="rounded-md border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
@@ -305,10 +305,10 @@ export default function ScriptsPage() {
                       <div className="flex flex-wrap items-center gap-2">
                         <StatusBadge status={detail.script.status} />
                         <Badge variant="outline">
-                          originality {detail.script.originalityScore ?? "-"}
+                          originalidade {detail.script.originalityScore ?? "-"}
                         </Badge>
                         <Badge variant="outline">
-                          rewrites {detail.script.rewriteCount}
+                          reescritas {detail.script.rewriteCount}
                         </Badge>
                       </div>
                     </div>
@@ -320,7 +320,7 @@ export default function ScriptsPage() {
                         disabled={action !== null}
                       >
                         {action === "critic" ? <Spinner /> : null}
-                        Run Critic
+                        Executar Crítico
                       </Button>
                       <Button
                         size="sm"
@@ -329,7 +329,7 @@ export default function ScriptsPage() {
                         disabled={action !== null}
                       >
                         {action === "rewrite" ? <Spinner /> : null}
-                        Rewrite
+                        Reescrever
                       </Button>
                       <Button
                         size="sm"
@@ -337,12 +337,12 @@ export default function ScriptsPage() {
                         disabled={action !== null || isBlocked}
                         title={
                           isBlocked
-                            ? "Script is BLOCKED (originality) and cannot enter production"
+                            ? "Roteiro está BLOQUEADO (originalidade) e não pode entrar em produção"
                             : undefined
                         }
                       >
                         {action === "approve" ? <Spinner /> : null}
-                        Approve for Production
+                        Aprovar para Produção
                       </Button>
                     </div>
                   </div>
@@ -355,19 +355,19 @@ export default function ScriptsPage() {
                   ) : null}
                   {approved ? (
                     <div className="rounded-md border border-success/50 bg-success/10 p-3 text-sm text-success">
-                      Approved for production. A video project was created.{" "}
+                      Aprovado para produção. Um projeto de vídeo foi criado.{" "}
                       <Link
                         href="/production"
                         className="font-medium underline underline-offset-4"
                       >
-                        Open Production Monitor
+                        Abrir Monitor de Produção
                       </Link>
                     </div>
                   ) : null}
                   {detail.script.thesis ? (
                     <div>
                       <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">
-                        Thesis
+                        Tese
                       </p>
                       <p className="text-sm">{detail.script.thesis}</p>
                     </div>
@@ -375,7 +375,7 @@ export default function ScriptsPage() {
                   {detail.script.selectedHook ? (
                     <div>
                       <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">
-                        Selected Hook
+                        Gancho Selecionado
                       </p>
                       <p className="text-sm">{detail.script.selectedHook}</p>
                     </div>
@@ -383,7 +383,7 @@ export default function ScriptsPage() {
                   {detail.hookVariants.length > 0 ? (
                     <div>
                       <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">
-                        Hook Variants
+                        Variantes de Gancho
                       </p>
                       <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
                         {detail.hookVariants.map((h, i) => (
@@ -395,7 +395,7 @@ export default function ScriptsPage() {
                   {detail.script.fullScript ? (
                     <div>
                       <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">
-                        Full Script
+                        Roteiro Completo
                       </p>
                       <p className="whitespace-pre-wrap text-sm leading-relaxed">
                         {detail.script.fullScript}
@@ -408,16 +408,16 @@ export default function ScriptsPage() {
               {detail.beatPlan.length > 0 ? (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Beat Plan</CardTitle>
+                    <CardTitle>Plano de Batidas</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-border text-left text-xs text-muted-foreground">
-                            <th className="py-2 pr-3 font-medium">Beat</th>
-                            <th className="py-2 pr-3 font-medium">Time</th>
-                            <th className="py-2 font-medium">Narration</th>
+                            <th className="py-2 pr-3 font-medium">Batida</th>
+                            <th className="py-2 pr-3 font-medium">Tempo</th>
+                            <th className="py-2 font-medium">Narração</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -444,14 +444,14 @@ export default function ScriptsPage() {
                 <Card>
                   <CardHeader>
                     <div className="flex items-center justify-between gap-3">
-                      <CardTitle>Originality</CardTitle>
+                      <CardTitle>Originalidade</CardTitle>
                       {originality.decision ? (
                         <StatusBadge status={originality.decision} />
                       ) : null}
                     </div>
                     {typeof originality.aggregateOriginality === "number" ? (
                       <CardDescription>
-                        Aggregate originality{" "}
+                        Originalidade agregada{" "}
                         {(originality.aggregateOriginality * 100).toFixed(0)}%
                       </CardDescription>
                     ) : null}
@@ -462,7 +462,7 @@ export default function ScriptsPage() {
                     ))}
                     {originality.flaggedAgainst ? (
                       <p className="text-xs text-muted-foreground">
-                        Flagged against: {originality.flaggedAgainst}
+                        Sinalizado contra: {originality.flaggedAgainst}
                       </p>
                     ) : null}
                   </CardContent>
@@ -473,7 +473,7 @@ export default function ScriptsPage() {
                 <Card>
                   <CardHeader>
                     <div className="flex items-center justify-between gap-3">
-                      <CardTitle>Critic</CardTitle>
+                      <CardTitle>Crítico</CardTitle>
                       {critique.verdict ? (
                         <StatusBadge status={critique.verdict} />
                       ) : null}
@@ -503,7 +503,7 @@ export default function ScriptsPage() {
                         <Separator />
                         <div className="space-y-2">
                           <p className="text-xs font-semibold uppercase text-muted-foreground">
-                            Issues
+                            Problemas
                           </p>
                           {critique.issues!.map((iss, i) => (
                             <div key={i} className="flex items-start gap-2">
@@ -523,7 +523,7 @@ export default function ScriptsPage() {
                         <Separator />
                         <div>
                           <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">
-                            Rewrite Guidance
+                            Orientação de Reescrita
                           </p>
                           <p className="text-sm">{critique.rewrite_guidance}</p>
                         </div>

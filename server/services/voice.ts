@@ -19,9 +19,9 @@ export async function renderVoice(
   voiceIdOverride?: string,
 ): Promise<string> {
   const project = await videoRepo.findById(videoProjectId);
-  if (!project?.scriptPackageId) throw new Error("Video project has no script");
+  if (!project?.scriptPackageId) throw new Error("Projeto de vídeo não tem roteiro");
   const script = await scriptRepo.findById(project.scriptPackageId);
-  if (!script?.fullScript) throw new Error("Script has no narration text");
+  if (!script?.fullScript) throw new Error("Roteiro não tem texto de narração");
 
   const channel = await channelRepo.findById(project.channelId);
   const tts = getTTS();
@@ -32,7 +32,7 @@ export async function renderVoice(
     "";
 
   if (!voiceId) {
-    throw new Error("No voice configured (set ELEVENLABS_DEFAULT_VOICE_ID or channel voice)");
+    throw new Error("Nenhuma voz configurada (defina ELEVENLABS_DEFAULT_VOICE_ID ou a voz do canal)");
   }
 
   const slug = slugify(script.title);

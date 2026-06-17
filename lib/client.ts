@@ -20,7 +20,7 @@ async function parse<T>(res: Response): Promise<T> {
   const json = await res.json().catch(() => null);
   if (!res.ok) {
     const message =
-      json?.error?.message ?? `Request failed with status ${res.status}`;
+      json?.error?.message ?? `Requisição falhou com status ${res.status}`;
     throw new Error(message);
   }
   return json as T;
@@ -56,6 +56,6 @@ export async function runJob(
     const { job } = await apiGet<{ job: JobView }>(`/api/jobs/${jobId}`);
     onTick?.(job);
     if (job.status === "COMPLETED" || job.status === "FAILED") return job;
-    if (Date.now() > deadline) throw new Error("Job timed out");
+    if (Date.now() > deadline) throw new Error("Job expirou");
   }
 }

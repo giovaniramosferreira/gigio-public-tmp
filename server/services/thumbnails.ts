@@ -10,7 +10,7 @@ import { thumbnailRepo } from "@/server/repositories/production";
 const logger = log("thumbnails");
 
 const VISUAL_IDENTITY =
-  "Restrained editorial cover, bold readable overlay text, muted palette, strong figure-ground contrast. No cliche AI imagery.";
+  "Capa editorial contida, texto de sobreposição em negrito legível, paleta suave, forte contraste figura-fundo. Sem imagens clichê de IA.";
 
 /**
  * Thumbnail / cover frame system (FR-11). Generates at least 3 variants with
@@ -19,9 +19,9 @@ const VISUAL_IDENTITY =
  */
 export async function generateThumbnails(videoProjectId: string): Promise<string> {
   const project = await videoRepo.findById(videoProjectId);
-  if (!project?.scriptPackageId) throw new Error("Video project has no script");
+  if (!project?.scriptPackageId) throw new Error("Projeto de vídeo não tem roteiro");
   const script = await scriptRepo.findById(project.scriptPackageId);
-  if (!script) throw new Error("Script not found for project");
+  if (!script) throw new Error("Roteiro não encontrado para o projeto");
 
   const notes = script.criticNotesJson ? JSON.parse(script.criticNotesJson) : {};
   const titleVariants: string[] = notes.titleVariants ?? [script.title];

@@ -73,12 +73,12 @@ interface VideoDetail {
 }
 
 const CHECKLIST = [
-  "Is the angle genuinely specific?",
-  "Is the hidden side effect clear by second 8?",
-  "Does the script sound like this channel?",
-  "Is the pacing strong for Shorts?",
-  "Do visuals support meaning?",
-  "Could a platform reviewer see clear original value?",
+  "O ângulo é genuinamente específico?",
+  "O efeito colateral oculto está claro até o segundo 8?",
+  "O roteiro soa como este canal?",
+  "O ritmo é forte para Shorts?",
+  "Os visuais apoiam o significado?",
+  "Um revisor de plataforma conseguiria ver valor original claro?",
 ];
 
 function parseHashtags(json: string | null): string[] {
@@ -94,14 +94,14 @@ function parseHashtags(json: string | null): string[] {
 function RiskBar({ label, value }: { label: string; value: number | null }) {
   const v = typeof value === "number" ? value : 0;
   const pct = Math.max(0, Math.min(100, v * 100));
-  // Higher risk = worse: lean destructive at high values.
+  // Maior risco = pior: inclinado para destrutivo em valores altos.
   const barColor = v >= 0.66 ? "bg-destructive" : v >= 0.33 ? "bg-warning" : "bg-success";
   return (
     <div>
       <div className="mb-1 flex justify-between text-[11px] text-muted-foreground">
         <span>{label}</span>
         <span className="tabular-nums">
-          {value != null ? `${pct.toFixed(0)}% risk` : "-"}
+          {value != null ? `${pct.toFixed(0)}% risco` : "-"}
         </span>
       </div>
       <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
@@ -184,7 +184,7 @@ export default function ReviewPage() {
     try {
       await apiPost(`/api/review/${selectedId}`, { action: "approve" });
       setApprovedDone(true);
-      setStatusLine("Approved. Package is ready for export.");
+      setStatusLine("Aprovado. Pacote pronto para exportação.");
       await loadDetail(selectedId);
       await loadLists();
     } catch (e) {
@@ -197,7 +197,7 @@ export default function ReviewPage() {
   async function handleReject() {
     if (!selectedId) return;
     if (!rejectReason.trim()) {
-      setDetailError("A reason is required to reject.");
+      setDetailError("Um motivo é obrigatório para rejeitar.");
       return;
     }
     setAction("reject");
@@ -207,7 +207,7 @@ export default function ReviewPage() {
         action: "reject",
         reason: rejectReason.trim(),
       });
-      setStatusLine("Rejected.");
+      setStatusLine("Rejeitado.");
       await loadDetail(selectedId);
       await loadLists();
     } catch (e) {
@@ -226,9 +226,9 @@ export default function ReviewPage() {
         action: "request-rewrite",
       });
       if (job.status === "FAILED") {
-        throw new Error(job.error?.message ?? "Rewrite job failed");
+        throw new Error(job.error?.message ?? "Job de reescrita falhou");
       }
-      setStatusLine("Rewrite requested. The script was sent back for rewrite.");
+      setStatusLine("Reescrita solicitada. O roteiro foi enviado de volta para reescrita.");
       await loadDetail(selectedId);
       await loadLists();
     } catch (e) {
@@ -269,20 +269,20 @@ export default function ReviewPage() {
   return (
     <>
       <PageHeader
-        title="Preview & QA Review"
-        description="Review QA scores and the human checklist before approving for export."
+        title="Prévia e Revisão de QA"
+        description="Revise pontuações de QA e a lista de verificação humana antes de aprovar para exportação."
       />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[22rem_1fr]">
         <Card className="h-fit">
           <CardHeader>
-            <CardTitle>Awaiting Review</CardTitle>
-            <CardDescription>Videos ready for QA review.</CardDescription>
+            <CardTitle>Aguardando Revisão</CardTitle>
+            <CardDescription>Vídeos prontos para revisão de QA.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {listLoading ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Spinner /> Loading...
+                <Spinner /> Carregando...
               </div>
             ) : listError ? (
               <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
@@ -292,7 +292,7 @@ export default function ReviewPage() {
               <>
                 {pending.length === 0 ? (
                   <p className="text-sm text-muted-foreground">
-                    Nothing awaiting review.
+                    Nada aguardando revisão.
                   </p>
                 ) : (
                   renderList(pending)
@@ -302,7 +302,7 @@ export default function ReviewPage() {
                     <Separator />
                     <div>
                       <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
-                        Approved / Exported
+                        Aprovados / Exportados
                       </p>
                       {renderList(done)}
                     </div>
@@ -320,14 +320,14 @@ export default function ReviewPage() {
                 <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
                   <CheckCircle className="h-8 w-8 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">
-                    Select a video to preview and review its QA results.
+                    Selecione um vídeo para prévia e revisar seus resultados de QA.
                   </p>
                 </div>
               </CardContent>
             </Card>
           ) : detailLoading && !detail ? (
             <div className="flex items-center gap-2 py-12 text-sm text-muted-foreground">
-              <Spinner /> Loading video...
+              <Spinner /> Carregando vídeo...
             </div>
           ) : detailError && !detail ? (
             <div className="rounded-md border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
@@ -351,12 +351,12 @@ export default function ReviewPage() {
                         src={detail.video.previewFilePath}
                       />
                       <p className="text-xs text-muted-foreground">
-                        preview at {detail.video.previewFilePath}
+                        prévia em {detail.video.previewFilePath}
                       </p>
                     </>
                   ) : (
                     <p className="text-sm text-muted-foreground">
-                      No preview rendered yet.
+                      Nenhuma prévia renderizada ainda.
                     </p>
                   )}
                 </CardContent>
@@ -365,16 +365,16 @@ export default function ReviewPage() {
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between gap-3">
-                    <CardTitle className="text-base">QA Results</CardTitle>
+                    <CardTitle className="text-base">Resultados de QA</CardTitle>
                     {qa?.decision ? (
                       <StatusBadge status={qa.decision} />
                     ) : (
-                      <Badge variant="secondary">no QA run</Badge>
+                      <Badge variant="secondary">sem execução de QA</Badge>
                     )}
                   </div>
                   {qa ? (
                     <CardDescription>
-                      Overall score{" "}
+                      Pontuação geral{" "}
                       {qa.overallScore != null
                         ? qa.overallScore.toFixed(2)
                         : "-"}
@@ -385,12 +385,12 @@ export default function ReviewPage() {
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
                       <RiskBar
-                        label="Originality risk"
+                        label="Risco de originalidade"
                         value={qa.originalityRiskScore}
                       />
-                      <RiskBar label="Reused risk" value={qa.reusedRiskScore} />
+                      <RiskBar label="Risco de conteúdo reutilizado" value={qa.reusedRiskScore} />
                       <RiskBar
-                        label="Technical risk"
+                        label="Risco técnico"
                         value={qa.technicalRiskScore}
                       />
                     </div>
@@ -399,7 +399,7 @@ export default function ReviewPage() {
                         <Separator />
                         <div className="space-y-2">
                           <p className="text-xs font-semibold uppercase text-muted-foreground">
-                            Reason Codes
+                            Códigos de Motivo
                           </p>
                           {qa.reasonCodes.map((rc, i) => (
                             <div key={i} className="text-sm">
@@ -416,7 +416,7 @@ export default function ReviewPage() {
                 ) : (
                   <CardContent>
                     <p className="text-sm text-muted-foreground">
-                      No QA run available for this video yet.
+                      Nenhuma execução de QA disponível para este vídeo ainda.
                     </p>
                   </CardContent>
                 )}
@@ -424,20 +424,20 @@ export default function ReviewPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Metadata</CardTitle>
+                  <CardTitle className="text-base">Metadados</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm">
                   {detail.metadata ? (
                     <>
                       <div>
                         <p className="text-xs font-semibold uppercase text-muted-foreground">
-                          Title
+                          Título
                         </p>
                         <p>{detail.metadata.title ?? "-"}</p>
                       </div>
                       <div>
                         <p className="text-xs font-semibold uppercase text-muted-foreground">
-                          Description
+                          Descrição
                         </p>
                         <p className="whitespace-pre-wrap text-muted-foreground">
                           {detail.metadata.description ?? "-"}
@@ -460,7 +460,7 @@ export default function ReviewPage() {
                       {detail.metadata.pinnedComment ? (
                         <div>
                           <p className="text-xs font-semibold uppercase text-muted-foreground">
-                            Pinned Comment
+                            Comentário Fixado
                           </p>
                           <p className="text-muted-foreground">
                             {detail.metadata.pinnedComment}
@@ -469,7 +469,7 @@ export default function ReviewPage() {
                       ) : null}
                     </>
                   ) : (
-                    <p className="text-muted-foreground">No metadata yet.</p>
+                    <p className="text-muted-foreground">Nenhum metadado ainda.</p>
                   )}
                 </CardContent>
               </Card>
@@ -477,13 +477,13 @@ export default function ReviewPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
-                    Thumbnails ({detail.thumbnails.length})
+                    Miniaturas ({detail.thumbnails.length})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {detail.thumbnails.length === 0 ? (
                     <p className="text-sm text-muted-foreground">
-                      No thumbnails yet.
+                      Nenhuma miniatura ainda.
                     </p>
                   ) : (
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -495,17 +495,17 @@ export default function ReviewPage() {
                           <div className="flex items-center justify-between gap-2">
                             <span className="font-medium">{t.variantLabel}</span>
                             {t.isSelected ? (
-                              <Badge variant="success">selected</Badge>
+                              <Badge variant="success">selecionada</Badge>
                             ) : null}
                           </div>
                           <div className="text-[11px] text-muted-foreground">
-                            readability{" "}
+                            legibilidade{" "}
                             {t.readabilityScore != null
                               ? t.readabilityScore.toFixed(2)
                               : "-"}
                           </div>
                           <div className="text-[11px] text-muted-foreground">
-                            similarity{" "}
+                            similaridade{" "}
                             {t.similarityScore != null
                               ? t.similarityScore.toFixed(2)
                               : "-"}
@@ -524,9 +524,9 @@ export default function ReviewPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Human Review Checklist</CardTitle>
+                  <CardTitle className="text-base">Lista de Verificação Humana</CardTitle>
                   <CardDescription>
-                    Guidance only. Approval is enabled regardless.
+                    Apenas orientação. A aprovação está habilitada independentemente.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
@@ -557,7 +557,7 @@ export default function ReviewPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Decision</CardTitle>
+                  <CardTitle className="text-base">Decisão</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {detailError ? (
@@ -572,8 +572,8 @@ export default function ReviewPage() {
                   ) : null}
                   {blocked ? (
                     <p className="text-xs text-destructive">
-                      QA decision is BLOCK. Approval is disabled until the QA
-                      issues are resolved.
+                      Decisão de QA é BLOQUEADO. A aprovação está desabilitada até que os
+                      problemas de QA sejam resolvidos.
                     </p>
                   ) : null}
                   <div className="flex flex-wrap items-center gap-2">
@@ -582,12 +582,12 @@ export default function ReviewPage() {
                       disabled={action !== null || blocked}
                       title={
                         blocked
-                          ? "QA decision is BLOCK; cannot approve"
+                          ? "Decisão de QA é BLOQUEADO; não é possível aprovar"
                           : undefined
                       }
                     >
                       {action === "approve" ? <Spinner /> : null}
-                      Approve
+                      Aprovar
                     </Button>
                     <Button
                       variant="outline"
@@ -595,20 +595,20 @@ export default function ReviewPage() {
                       disabled={action !== null}
                     >
                       {action === "rewrite" ? <Spinner /> : null}
-                      Request Rewrite
+                      Solicitar Reescrita
                     </Button>
                     {approvedDone ? (
                       <Button asChild variant="secondary">
-                        <Link href="/export">Go to Export</Link>
+                        <Link href="/export">Ir para Exportação</Link>
                       </Button>
                     ) : null}
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="reject-reason">Reject reason</Label>
+                    <Label htmlFor="reject-reason">Motivo da rejeição</Label>
                     <div className="flex flex-wrap items-center gap-2">
                       <Input
                         id="reject-reason"
-                        placeholder="Why is this rejected?"
+                        placeholder="Por que está sendo rejeitado?"
                         value={rejectReason}
                         onChange={(e) => setRejectReason(e.target.value)}
                         disabled={action !== null}
@@ -620,7 +620,7 @@ export default function ReviewPage() {
                         disabled={action !== null}
                       >
                         {action === "reject" ? <Spinner /> : null}
-                        Reject
+                        Rejeitar
                       </Button>
                     </div>
                   </div>

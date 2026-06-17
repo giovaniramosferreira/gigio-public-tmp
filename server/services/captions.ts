@@ -21,9 +21,9 @@ const logger = log("captions");
  */
 export async function generateCaptions(videoProjectId: string): Promise<string> {
   const project = await videoRepo.findById(videoProjectId);
-  if (!project?.scriptPackageId) throw new Error("Video project has no script");
+  if (!project?.scriptPackageId) throw new Error("Projeto de vídeo não tem roteiro");
   const script = await scriptRepo.findById(project.scriptPackageId);
-  if (!script?.fullScript) throw new Error("Script has no narration text");
+  if (!script?.fullScript) throw new Error("Roteiro não tem texto de narração");
 
   const voice = await voiceRepo.latestForScript(script.id);
 

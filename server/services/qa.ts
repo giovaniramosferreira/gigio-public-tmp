@@ -30,9 +30,9 @@ interface ReasonCode {
  */
 export async function runQA(videoProjectId: string): Promise<{ decision: QADecision }> {
   const project = await videoRepo.findById(videoProjectId);
-  if (!project?.scriptPackageId) throw new Error("Video project has no script");
+  if (!project?.scriptPackageId) throw new Error("Projeto de vídeo não tem roteiro");
   const script = await scriptRepo.findById(project.scriptPackageId);
-  if (!script) throw new Error("Script not found for project");
+  if (!script) throw new Error("Roteiro não encontrado para o projeto");
 
   const reasons: ReasonCode[] = [];
 
