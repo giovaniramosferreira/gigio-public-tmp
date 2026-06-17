@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["**/*.test.ts"],
-    exclude: ["node_modules", ".next", "data"],
+    exclude: ["node_modules", ".next", "data", ".claude"],
   },
   resolve: {
     alias: {
