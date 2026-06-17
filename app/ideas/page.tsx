@@ -108,6 +108,25 @@ export default function IdeasPage() {
     void loadIdeas();
   }, [loadIdeas]);
 
+  function friendlyError(e: unknown): string {
+    const raw = e instanceof Error ? e.message : String(e);
+    if (raw.includes("ANTHROPIC_API_KEY") || raw.includes("not configured") || raw.includes("NOT_CONFIGURED"))
+      return "Chave da Anthropic não configurada. Adicione ANTHROPIC_API_KEY no arquivo .env.local e reinicie o servidor.";
+    if (raw.includes("non-empty content") || raw.includes("empty"))
+      return "O conteúdo enviado estava vazio. Tente novamente.";
+    if (raw.includes("401") || raw.includes("invalid_api_key") || raw.includes("authentication"))
+      return "Chave de API inválida. Verifique o ANTHROPIC_API_KEY no .env.local.";
+    if (raw.includes("429") || raw.includes("rate_limit"))
+      return "Limite de requisições atingido. Aguarde alguns segundos e tente novamente.";
+    if (raw.includes("500") || raw.includes("502") || raw.includes("503"))
+      return "O serviço de IA está temporariamente indisponível. Tente novamente em instantes.";
+    if (raw.includes("interrompida") || raw.includes("interrupted"))
+      return "A tarefa anterior foi interrompida pelo reinício do servidor. Tente novamente.";
+    if (raw.includes("FAILED") || raw.includes("falhou"))
+      return "Não foi possível gerar ideias. Verifique suas chaves de API em Configurações e tente novamente.";
+    return "Algo deu errado. Tente novamente ou verifique as configurações de API.";
+  }
+
   async function handleDiscover() {
     setError(null);
     setDiscovering(true);
@@ -122,13 +141,14 @@ export default function IdeasPage() {
         seedPhrases: seeds.length > 0 ? seeds : undefined,
       });
       if (job.status === "FAILED") {
-        throw new Error(job.error?.message ?? "Job de descoberta falhou");
+        setError(friendlyError(job.error?.message ?? ""));
+        return;
       }
-      setStatusLine("Ideias geradas.");
+      setStatusLine("Ideias geradas com sucesso!");
       await loadIdeas();
     } catch (e) {
       setStatusLine(null);
-      setError(e instanceof Error ? e.message : String(e));
+      setError(friendlyError(e));
     } finally {
       setDiscovering(false);
     }

@@ -9,7 +9,9 @@ export const dynamic = "force-dynamic";
 const bodySchema = z.object({
   channelId: z.string().optional(),
   pillarId: z.string().optional(),
-  seedPhrases: z.string().optional(),
+  seedPhrases: z.union([z.string(), z.array(z.string())]).optional().transform(
+    (v) => (Array.isArray(v) ? v.join(", ") : v),
+  ),
   count: z.number().int().min(25).max(60).optional(),
 });
 

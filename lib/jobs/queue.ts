@@ -96,7 +96,7 @@ async function runJob(
         startedAt,
         completedAt: new Date(),
         errorCode: "NO_HANDLER",
-        errorMessage: `No handler registered for job type "${type}"`,
+        errorMessage: `Nenhum processador registrado para o tipo de tarefa "${type}"`,
       },
     });
     logger.error({ jobId, type }, "no handler registered");
@@ -160,7 +160,7 @@ export async function recoverStaleJobs(): Promise<number> {
     data: {
       status: "FAILED",
       errorCode: "INTERRUPTED",
-      errorMessage: "Job interrupted by server restart",
+      errorMessage: "Tarefa interrompida pelo reinício do servidor",
       completedAt: new Date(),
     },
   });
