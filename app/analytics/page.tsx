@@ -109,7 +109,7 @@ export default function AnalyticsPage() {
       try {
         const { active } = await apiGet<{ active: Channel | null }>("/api/channels");
         if (!active) {
-          setError("No active channel configured.");
+          setError("Nenhum canal ativo configurado.");
           return;
         }
         setChannel(active);
@@ -121,7 +121,7 @@ export default function AnalyticsPage() {
         setInsights(insightsRes.insights);
         setVideos(videosRes.videos ?? []);
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Failed to load analytics");
+        setError(e instanceof Error ? e.message : "Falha ao carregar análises");
       } finally {
         setLoading(false);
       }
@@ -151,10 +151,10 @@ export default function AnalyticsPage() {
       });
       setSubmitSuccess(true);
       setForm({ ...EMPTY_FORM, snapshotDate: form.snapshotDate });
-      // Refresh insights
+      // Atualizar insights
       if (channel) await loadInsights(channel.id);
     } catch (e) {
-      setSubmitError(e instanceof Error ? e.message : "Failed to save snapshot");
+      setSubmitError(e instanceof Error ? e.message : "Falha ao salvar snapshot");
     } finally {
       setSubmitting(false);
     }
@@ -167,13 +167,13 @@ export default function AnalyticsPage() {
   return (
     <>
       <PageHeader
-        title="Analytics"
-        description="Track performance patterns to inform future content decisions."
+        title="Análises"
+        description="Acompanhe padrões de desempenho para orientar futuras decisões de conteúdo."
       />
 
       {loading ? (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Spinner /> Loading insights...
+          <Spinner /> Carregando insights...
         </div>
       ) : error ? (
         <Card>
@@ -185,9 +185,9 @@ export default function AnalyticsPage() {
           {!insights || insights.sampleSize === 0 ? (
             <Card>
               <CardHeader>
-                <CardTitle>Performance</CardTitle>
+                <CardTitle>Desempenho</CardTitle>
                 <CardDescription>
-                  Learning loop for {channel?.name ?? "the channel"}.
+                  Loop de aprendizado para {channel?.name ?? "o canal"}.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -195,7 +195,7 @@ export default function AnalyticsPage() {
                   <BarChart3 className="h-8 w-8 text-muted-foreground" />
                   <p className="max-w-md text-sm text-muted-foreground">
                     {insights?.recommendations[0] ??
-                      "No analytics yet. Log performance data below to surface pillar, duration, and title-pattern trends."}
+                      "Nenhuma análise ainda. Registre dados de desempenho abaixo para revelar tendências de pilar, duração e padrão de título."}
                   </p>
                 </div>
               </CardContent>
@@ -204,10 +204,10 @@ export default function AnalyticsPage() {
             <div className="flex flex-col gap-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Recommendations</CardTitle>
+                  <CardTitle>Recomendações</CardTitle>
                   <CardDescription>
-                    Derived from {insights.sampleSize} video
-                    {insights.sampleSize === 1 ? "" : "s"} with performance data.
+                    Derivadas de {insights.sampleSize} vídeo
+                    {insights.sampleSize === 1 ? "" : "s"} com dados de desempenho.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -224,15 +224,15 @@ export default function AnalyticsPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Strongest Pillars</CardTitle>
-                    <CardDescription>By average views.</CardDescription>
+                    <CardTitle>Pilares Mais Fortes</CardTitle>
+                    <CardDescription>Por visualizações médias.</CardDescription>
                   </CardHeader>
                   <CardContent className="flex flex-col gap-2 text-sm">
                     {insights.topPillars.map((p) => (
                       <div key={p.pillar} className="flex items-center justify-between">
                         <span className="text-foreground">{p.pillar}</span>
                         <span className="text-muted-foreground">
-                          {p.avgViews.toLocaleString()} views · {p.avgViewedPct}% · {p.videos}x
+                          {p.avgViews.toLocaleString()} visualizações · {p.avgViewedPct}% · {p.videos}x
                         </span>
                       </div>
                     ))}
@@ -241,15 +241,15 @@ export default function AnalyticsPage() {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Duration Windows</CardTitle>
-                    <CardDescription>Average viewed percentage by length.</CardDescription>
+                    <CardTitle>Janelas de Duração</CardTitle>
+                    <CardDescription>Percentual médio assistido por comprimento.</CardDescription>
                   </CardHeader>
                   <CardContent className="flex flex-col gap-2 text-sm">
                     {insights.durationWindows.map((d) => (
                       <div key={d.label} className="flex items-center justify-between">
                         <span className="text-foreground">{d.label}</span>
                         <span className="text-muted-foreground">
-                          {d.avgViewedPct}% retention · {d.videos}x
+                          {d.avgViewedPct}% retenção · {d.videos}x
                         </span>
                       </div>
                     ))}
@@ -260,15 +260,15 @@ export default function AnalyticsPage() {
               {insights.titlePatterns.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Title Patterns</CardTitle>
-                    <CardDescription>By average views.</CardDescription>
+                    <CardTitle>Padrões de Título</CardTitle>
+                    <CardDescription>Por visualizações médias.</CardDescription>
                   </CardHeader>
                   <CardContent className="flex flex-col gap-2 text-sm">
                     {insights.titlePatterns.map((t) => (
                       <div key={t.pattern} className="flex items-center justify-between">
                         <span className="text-foreground">{t.pattern}</span>
                         <span className="text-muted-foreground">
-                          {t.avgViews.toLocaleString()} views · {t.videos}x
+                          {t.avgViews.toLocaleString()} visualizações · {t.videos}x
                         </span>
                       </div>
                     ))}
@@ -280,28 +280,28 @@ export default function AnalyticsPage() {
 
           <Separator />
 
-          {/* ── Manual entry ── */}
+          {/* ── Entrada manual ── */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <PlusCircle className="h-4 w-4" />
-                Log Performance Data
+                Registrar Dados de Desempenho
               </CardTitle>
               <CardDescription>
-                Manually record a performance snapshot for a published video to
-                feed the learning loop.
+                Registre manualmente um snapshot de desempenho para um vídeo publicado
+                para alimentar o loop de aprendizado.
               </CardDescription>
             </CardHeader>
             <CardContent>
               {videos.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  No videos found. Complete the production pipeline first.
+                  Nenhum vídeo encontrado. Complete o pipeline de produção primeiro.
                 </p>
               ) : (
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                  {/* Video selector */}
+                  {/* Seletor de vídeo */}
                   <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="videoProjectId">Video</Label>
+                    <Label htmlFor="videoProjectId">Vídeo</Label>
                     <select
                       id="videoProjectId"
                       required
@@ -309,7 +309,7 @@ export default function AnalyticsPage() {
                       onChange={(e) => field("videoProjectId", e.target.value)}
                       className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                     >
-                      <option value="">Select a video…</option>
+                      <option value="">Selecione um vídeo…</option>
                       {videos.map((v) => (
                         <option key={v.id} value={v.id}>
                           {v.title}
@@ -328,9 +328,9 @@ export default function AnalyticsPage() {
                     )}
                   </div>
 
-                  {/* Date */}
+                  {/* Data */}
                   <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="snapshotDate">Snapshot Date</Label>
+                    <Label htmlFor="snapshotDate">Data do Snapshot</Label>
                     <Input
                       id="snapshotDate"
                       type="date"
@@ -339,83 +339,83 @@ export default function AnalyticsPage() {
                     />
                   </div>
 
-                  {/* Core metrics */}
+                  {/* Métricas principais */}
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                     <div className="flex flex-col gap-1.5">
-                      <Label htmlFor="views">Views</Label>
+                      <Label htmlFor="views">Visualizações</Label>
                       <Input
                         id="views"
                         type="number"
                         min={0}
-                        placeholder="e.g. 12400"
+                        placeholder="ex: 12400"
                         value={form.views}
                         onChange={(e) => field("views", e.target.value)}
                       />
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <Label htmlFor="likes">Likes</Label>
+                      <Label htmlFor="likes">Curtidas</Label>
                       <Input
                         id="likes"
                         type="number"
                         min={0}
-                        placeholder="e.g. 340"
+                        placeholder="ex: 340"
                         value={form.likes}
                         onChange={(e) => field("likes", e.target.value)}
                       />
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <Label htmlFor="comments">Comments</Label>
+                      <Label htmlFor="comments">Comentários</Label>
                       <Input
                         id="comments"
                         type="number"
                         min={0}
-                        placeholder="e.g. 28"
+                        placeholder="ex: 28"
                         value={form.comments}
                         onChange={(e) => field("comments", e.target.value)}
                       />
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <Label htmlFor="shares">Shares</Label>
+                      <Label htmlFor="shares">Compartilhamentos</Label>
                       <Input
                         id="shares"
                         type="number"
                         min={0}
-                        placeholder="e.g. 15"
+                        placeholder="ex: 15"
                         value={form.shares}
                         onChange={(e) => field("shares", e.target.value)}
                       />
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <Label htmlFor="averageViewPercentage">Avg View % (0-100)</Label>
+                      <Label htmlFor="averageViewPercentage">% Média Assistida (0-100)</Label>
                       <Input
                         id="averageViewPercentage"
                         type="number"
                         min={0}
                         max={100}
                         step={0.1}
-                        placeholder="e.g. 68.5"
+                        placeholder="ex: 68.5"
                         value={form.averageViewPercentage}
                         onChange={(e) => field("averageViewPercentage", e.target.value)}
                       />
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <Label htmlFor="watchTimeSeconds">Watch Time (s)</Label>
+                      <Label htmlFor="watchTimeSeconds">Tempo de Exibição (s)</Label>
                       <Input
                         id="watchTimeSeconds"
                         type="number"
                         min={0}
-                        placeholder="e.g. 8400"
+                        placeholder="ex: 8400"
                         value={form.watchTimeSeconds}
                         onChange={(e) => field("watchTimeSeconds", e.target.value)}
                       />
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <Label htmlFor="impressions">Impressions</Label>
+                      <Label htmlFor="impressions">Impressões</Label>
                       <Input
                         id="impressions"
                         type="number"
                         min={0}
-                        placeholder="e.g. 54000"
+                        placeholder="ex: 54000"
                         value={form.impressions}
                         onChange={(e) => field("impressions", e.target.value)}
                       />
@@ -428,7 +428,7 @@ export default function AnalyticsPage() {
                         min={0}
                         max={1}
                         step={0.001}
-                        placeholder="e.g. 0.042"
+                        placeholder="ex: 0.042"
                         value={form.ctr}
                         onChange={(e) => field("ctr", e.target.value)}
                       />
@@ -440,7 +440,7 @@ export default function AnalyticsPage() {
                   )}
                   {submitSuccess && (
                     <p className="text-sm text-green-500">
-                      Snapshot saved. Insights updated above.
+                      Snapshot salvo. Insights atualizados acima.
                     </p>
                   )}
 
@@ -448,10 +448,10 @@ export default function AnalyticsPage() {
                     {submitting ? (
                       <>
                         <Spinner className="mr-2 h-4 w-4" />
-                        Saving…
+                        Salvando…
                       </>
                     ) : (
-                      "Save Snapshot"
+                      "Salvar Snapshot"
                     )}
                   </Button>
                 </form>

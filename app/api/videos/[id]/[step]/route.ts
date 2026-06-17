@@ -26,7 +26,7 @@ export const POST = handler(
   async (req: NextRequest, ctx: { params: { id: string; step: string } }) => {
     const jobType = STEP_JOBS[ctx.params.step];
     if (!jobType) {
-      throw new ApiError("VALIDATION_ERROR", `Unknown production step "${ctx.params.step}"`);
+      throw new ApiError("VALIDATION_ERROR", `Etapa de produção desconhecida "${ctx.params.step}"`);
     }
     const video = await videoRepo.findById(ctx.params.id);
     if (!video) throw new ApiError("NOT_FOUND", `Video ${ctx.params.id} not found`);

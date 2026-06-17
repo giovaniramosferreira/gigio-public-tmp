@@ -16,7 +16,7 @@ export async function approveVideo(videoProjectId: string, notes?: string): Prom
 
   const latestQa = project.qaRuns[0];
   if (latestQa?.decision === "BLOCK") {
-    throw new Error("Cannot approve a video that QA marked BLOCK without resolving the block");
+    throw new Error("Não é possível aprovar um vídeo que o QA marcou como BLOQUEADO sem resolver o bloqueio");
   }
 
   await publishRepo.upsertForVideo(videoProjectId, {

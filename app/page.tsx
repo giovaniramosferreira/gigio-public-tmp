@@ -71,7 +71,7 @@ export default function DashboardPage() {
         setJobs(jobsRes.jobs ?? []);
         setScripts(scriptsRes.scripts ?? []);
 
-        // Learning loop — fire after channel is known; fails silently if no data.
+        // Loop de aprendizado — dispara após canal ser conhecido; falha silenciosamente sem dados.
         if (channelsRes.active) {
           try {
             const insightsRes = await apiGet<{ insights: Insights }>(
@@ -79,7 +79,7 @@ export default function DashboardPage() {
             );
             if (!cancelled) setInsights(insightsRes.insights);
           } catch {
-            // No analytics data yet — expected for new channels.
+            // Sem dados de análise ainda — esperado para novos canais.
           }
         }
       } catch (e) {
@@ -103,37 +103,37 @@ export default function DashboardPage() {
 
   const stats = [
     {
-      label: "Active Channel",
-      value: activeChannel?.name ?? "None",
-      hint: activeChannel ? "Currently active" : "No channel configured",
+      label: "Canal Ativo",
+      value: activeChannel?.name ?? "Nenhum",
+      hint: activeChannel ? "Atualmente ativo" : "Nenhum canal configurado",
     },
     {
-      label: "Idea Backlog",
+      label: "Backlog de Ideias",
       value: String(ideas.length),
-      hint: "Ideas awaiting review",
+      hint: "Ideias aguardando revisão",
     },
     {
-      label: "Jobs Running",
+      label: "Jobs em Execução",
       value: String(jobsRunning),
-      hint: "Queued or in progress",
+      hint: "Na fila ou em andamento",
     },
     {
-      label: "Scripts Ready",
+      label: "Roteiros Prontos",
       value: String(scripts.length),
-      hint: "Scripts generated",
+      hint: "Roteiros gerados",
     },
   ];
 
   return (
     <>
       <PageHeader
-        title="Dashboard"
-        description="Operational overview of the DarkTube OS pipeline, from idea backlog to export."
+        title="Painel"
+        description="Visão geral operacional do pipeline DarkTube OS, do backlog de ideias à exportação."
       />
 
       {loading ? (
         <div className="flex items-center gap-2 py-12 text-sm text-muted-foreground">
-          <Spinner /> Loading dashboard...
+          <Spinner /> Carregando painel...
         </div>
       ) : error ? (
         <div className="rounded-md border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
@@ -161,14 +161,14 @@ export default function DashboardPage() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <div>
-                  <CardTitle>Learning Loop</CardTitle>
+                  <CardTitle>Loop de Aprendizado</CardTitle>
                   <CardDescription>
-                    Recommendations derived from {insights.sampleSize} video
-                    {insights.sampleSize === 1 ? "" : "s"} with performance data.
+                    Recomendações derivadas de {insights.sampleSize} vídeo
+                    {insights.sampleSize === 1 ? "" : "s"} com dados de desempenho.
                   </CardDescription>
                 </div>
                 <Link href="/analytics" className="text-xs text-muted-foreground hover:text-primary transition-colors">
-                  Full Report
+                  Relatório Completo
                   <ArrowRight className="ml-1 inline h-3 w-3" />
                 </Link>
               </CardHeader>
@@ -188,7 +188,7 @@ export default function DashboardPage() {
                         key={p.pillar}
                         className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
                       >
-                        {p.pillar} · {p.avgViews.toLocaleString()} avg views
+                        {p.pillar} · {p.avgViews.toLocaleString()} visualizações médias
                       </span>
                     ))}
                   </div>
@@ -200,9 +200,9 @@ export default function DashboardPage() {
           <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <Card>
               <CardHeader>
-                <CardTitle>Recent Ideas</CardTitle>
+                <CardTitle>Ideias Recentes</CardTitle>
                 <CardDescription>
-                  Highest-scoring candidate topics in the backlog.
+                  Tópicos candidatos com maior pontuação no backlog.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -210,7 +210,7 @@ export default function DashboardPage() {
                   <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
                     <Inbox className="h-8 w-8 text-muted-foreground" />
                     <p className="text-sm text-muted-foreground">
-                      No ideas yet. Run discovery to populate the backlog.
+                      Nenhuma ideia ainda. Execute a descoberta para popular o backlog.
                     </p>
                   </div>
                 ) : (
@@ -236,15 +236,15 @@ export default function DashboardPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Recent Jobs</CardTitle>
+                <CardTitle>Jobs Recentes</CardTitle>
                 <CardDescription>
-                  Latest pipeline jobs and their status.
+                  Últimos jobs do pipeline e seus status.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {jobs.length === 0 ? (
                   <p className="py-8 text-center text-sm text-muted-foreground">
-                    No jobs have run yet.
+                    Nenhum job executado ainda.
                   </p>
                 ) : (
                   <ul className="divide-y divide-border">
@@ -267,23 +267,23 @@ export default function DashboardPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
+              <CardTitle>Ações Rápidas</CardTitle>
               <CardDescription>
-                Jump into the most common pipeline entry points.
+                Acesse os pontos de entrada mais comuns do pipeline.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-3 sm:flex-row">
               <Button asChild className="sm:flex-1">
                 <Link href="/ideas">
                   <Lightbulb className="h-4 w-4" />
-                  Discover Ideas
+                  Descobrir Ideias
                   <ArrowRight className="ml-auto h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline" className="sm:flex-1">
                 <Link href="/settings">
                   <Settings className="h-4 w-4" />
-                  Settings
+                  Configurações
                   <ArrowRight className="ml-auto h-4 w-4" />
                 </Link>
               </Button>

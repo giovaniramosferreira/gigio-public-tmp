@@ -12,7 +12,7 @@ const bodySchema = z.object({ ideaId: z.string() });
 export const POST = handler(async (req: NextRequest) => {
   const parsed = bodySchema.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) {
-    throw new ApiError("VALIDATION_ERROR", "ideaId is required", parsed.error.issues);
+    throw new ApiError("VALIDATION_ERROR", "ideaId é obrigatório", parsed.error.issues);
   }
 
   const idea = await ideaRepo.findById(parsed.data.ideaId);

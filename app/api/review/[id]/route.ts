@@ -26,7 +26,7 @@ export const POST = handler(
 
     const parsed = bodySchema.safeParse(await req.json().catch(() => ({})));
     if (!parsed.success) {
-      throw new ApiError("VALIDATION_ERROR", "Invalid review body", parsed.error.issues);
+      throw new ApiError("VALIDATION_ERROR", "Corpo da revisão inválido", parsed.error.issues);
     }
     const { action, notes, reason, instructions } = parsed.data;
 
@@ -35,14 +35,14 @@ export const POST = handler(
       return ok({ status: "approved" });
     }
     if (action === "reject") {
-      if (!reason) throw new ApiError("VALIDATION_ERROR", "reason is required to reject");
+      if (!reason) throw new ApiError("VALIDATION_ERROR", "motivo é obrigatório para rejeitar");
       await rejectVideo(video.id, reason);
       return ok({ status: "rejected" });
     }
 
     // request-rewrite: send the underlying script back through a rewrite.
     if (!video.scriptPackageId) {
-      throw new ApiError("CONFLICT", "Video has no script to rewrite");
+      throw new ApiError("CONFLICT", "Vídeo não tem roteiro para reescrever");
     }
     const jobId = await enqueueJob(
       JOB_TYPES.SCRIPT_REWRITE,

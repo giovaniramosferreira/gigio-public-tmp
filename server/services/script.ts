@@ -8,7 +8,7 @@ import { checkOriginality } from "./originality";
 const logger = log("script");
 
 const CHANNEL_THESIS =
-  "AI is changing the world in ways people are not talking about enough — especially the side effects.";
+  "A IA está mudando o mundo de maneiras que as pessoas não estão discutindo o suficiente — especialmente os efeitos colaterais.";
 
 /** Persist a script package output to a (new or existing) ScriptPackage row. */
 function buildScriptData(idea: { title: string }, out: ScriptPackageOutput) {
@@ -39,7 +39,7 @@ export async function generateScript(ideaId: string): Promise<string> {
     "script/generate-script",
     {
       channel_thesis: CHANNEL_THESIS,
-      tone_profile: "intelligent but clear, slightly unsettling, high-signal, editorial",
+      tone_profile: "inteligente mas claro, levemente perturbador, alto sinal, editorial",
       idea_title: idea.title,
       idea_angle: idea.angle ?? "",
       idea_why_underdiscussed: idea.whyUnderdiscussed ?? "",

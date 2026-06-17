@@ -108,7 +108,7 @@ export default function ExportPage() {
     try {
       const job = await runJob(`/api/videos/${selectedId}/export`);
       if (job.status === "FAILED") {
-        throw new Error(job.error?.message ?? "Export job failed");
+        throw new Error(job.error?.message ?? "Job de exportação falhou");
       }
       await loadDetail(selectedId);
       await loadLists();
@@ -152,20 +152,20 @@ export default function ExportPage() {
   return (
     <>
       <PageHeader
-        title="Export Packages"
-        description="Bundle approved videos into upload-ready folders with all assets."
+        title="Pacotes de Exportação"
+        description="Empacote vídeos aprovados em pastas prontas para upload com todos os assets."
       />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[22rem_1fr]">
         <Card className="h-fit">
           <CardHeader>
-            <CardTitle>Packages</CardTitle>
-            <CardDescription>Approved and exported videos.</CardDescription>
+            <CardTitle>Pacotes</CardTitle>
+            <CardDescription>Vídeos aprovados e exportados.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {listLoading ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Spinner /> Loading...
+                <Spinner /> Carregando...
               </div>
             ) : listError ? (
               <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
@@ -175,16 +175,16 @@ export default function ExportPage() {
               <>
                 <div>
                   <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
-                    Ready to Export
+                    Prontos para Exportar
                   </p>
-                  {renderList(approved, "No approved videos.")}
+                  {renderList(approved, "Nenhum vídeo aprovado.")}
                 </div>
                 <Separator />
                 <div>
                   <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
-                    Exported
+                    Exportados
                   </p>
-                  {renderList(exported, "No exported packages yet.")}
+                  {renderList(exported, "Nenhum pacote exportado ainda.")}
                 </div>
               </>
             )}
@@ -198,14 +198,14 @@ export default function ExportPage() {
                 <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
                   <Package className="h-8 w-8 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">
-                    Select a video to export or inspect its package.
+                    Selecione um vídeo para exportar ou inspecionar seu pacote.
                   </p>
                 </div>
               </CardContent>
             </Card>
           ) : detailLoading && !detail ? (
             <div className="flex items-center gap-2 py-12 text-sm text-muted-foreground">
-              <Spinner /> Loading...
+              <Spinner /> Carregando...
             </div>
           ) : detailError && !detail ? (
             <div className="rounded-md border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
@@ -230,7 +230,7 @@ export default function ExportPage() {
                   <div>
                     <Button onClick={handleExport} disabled={exporting}>
                       {exporting ? <Spinner /> : <Package className="h-4 w-4" />}
-                      Export Package
+                      Exportar Pacote
                     </Button>
                   </div>
                 ) : null}
@@ -238,12 +238,12 @@ export default function ExportPage() {
                 {folder ? (
                   <div className="rounded-md border border-border bg-secondary/40 p-3">
                     <p className="text-xs font-semibold uppercase text-muted-foreground">
-                      Export Folder
+                      Pasta de Exportação
                     </p>
                     <p className="break-all text-sm">{folder}</p>
                     {isExported ? (
                       <p className="mt-1 text-xs text-muted-foreground">
-                        Folder is ready for manual upload.
+                        Pasta pronta para upload manual.
                       </p>
                     ) : null}
                   </div>
@@ -252,7 +252,7 @@ export default function ExportPage() {
                 {folder ? (
                   <div>
                     <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
-                      Package Checklist
+                      Lista de Verificação do Pacote
                     </p>
                     <ul className="space-y-1">
                       {PACKAGE_FILES.map((f) => (
@@ -268,8 +268,8 @@ export default function ExportPage() {
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">
-                    Export this package to generate the upload-ready folder and
-                    file checklist.
+                    Exporte este pacote para gerar a pasta pronta para upload e a
+                    lista de verificação de arquivos.
                   </p>
                 )}
               </CardContent>

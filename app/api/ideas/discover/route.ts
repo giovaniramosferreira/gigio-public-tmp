@@ -17,13 +17,13 @@ const bodySchema = z.object({
 export const POST = handler(async (req: NextRequest) => {
   const parsed = bodySchema.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) {
-    throw new ApiError("VALIDATION_ERROR", "Invalid request body", parsed.error.issues);
+    throw new ApiError("VALIDATION_ERROR", "Corpo da requisição inválido", parsed.error.issues);
   }
 
   let channelId = parsed.data.channelId;
   if (!channelId) {
     const active = await channelRepo.findActive();
-    if (!active) throw new ApiError("NOT_FOUND", "No active channel configured");
+    if (!active) throw new ApiError("NOT_FOUND", "Nenhum canal ativo configurado");
     channelId = active.id;
   }
 

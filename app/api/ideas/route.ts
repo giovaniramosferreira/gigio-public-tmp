@@ -11,7 +11,7 @@ export const GET = handler(async (req: NextRequest) => {
   let channelId = searchParams.get("channelId") ?? undefined;
   if (!channelId) {
     const active = await channelRepo.findActive();
-    if (!active) throw new ApiError("NOT_FOUND", "No active channel configured");
+    if (!active) throw new ApiError("NOT_FOUND", "Nenhum canal ativo configurado");
     channelId = active.id;
   }
 

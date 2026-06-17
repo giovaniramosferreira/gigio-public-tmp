@@ -8,7 +8,7 @@ import { scoreIdea } from "./scoring";
 const logger = log("discovery");
 
 const CHANNEL_THESIS =
-  "AI is changing the world in ways people are not talking about enough — especially the side effects.";
+  "A IA está mudando o mundo de maneiras que as pessoas não estão discutindo o suficiente — especialmente os efeitos colaterais.";
 
 export interface DiscoverInput {
   channelId: string;

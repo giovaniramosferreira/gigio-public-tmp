@@ -29,7 +29,7 @@ const bodySchema = z.object({
 export const POST = handler(async (req: NextRequest) => {
   const parsed = bodySchema.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) {
-    throw new ApiError("VALIDATION_ERROR", "Invalid analytics body", parsed.error.issues);
+    throw new ApiError("VALIDATION_ERROR", "Corpo da análise inválido", parsed.error.issues);
   }
   const snapshotId = await ingestSnapshot(parsed.data.videoProjectId, parsed.data.data);
   return ok({ snapshotId }, 201);

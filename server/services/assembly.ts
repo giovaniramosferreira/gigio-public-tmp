@@ -32,13 +32,13 @@ export async function assembleVideo(videoProjectId: string): Promise<string> {
   await assertFfmpeg();
 
   const project = await videoRepo.findById(videoProjectId);
-  if (!project?.scriptPackageId) throw new Error("Video project has no script");
+  if (!project?.scriptPackageId) throw new Error("Projeto de vídeo não tem roteiro");
   const script = await scriptRepo.findById(project.scriptPackageId);
-  if (!script) throw new Error("Script not found for project");
+  if (!script) throw new Error("Roteiro não encontrado para o projeto");
 
   const voice = await voiceRepo.latestForScript(script.id);
   if (!voice?.audioFilePath || !(await fileExists(voice.audioFilePath))) {
-    throw new Error("Voice audio missing; render voice before assembly");
+    throw new Error("Áudio de voz ausente; renderize a voz antes de montar");
   }
 
   const captions = await captionRepo.findByScript(script.id);
@@ -144,11 +144,11 @@ export async function assembleVideo(videoProjectId: string): Promise<string> {
 
   // Verify the render is not a black/silent failure: it must exist with duration.
   if (!(await fileExists(previewPath))) {
-    throw new Error("Assembly produced no output file");
+    throw new Error("A montagem não produziu arquivo de saída");
   }
   const previewDuration = await probeDuration(previewPath);
   if (previewDuration <= 0) {
-    throw new Error("Assembly output has zero duration (corrupt render)");
+    throw new Error("Saída da montagem tem duração zero (renderização corrompida)");
   }
   const stat = await fs.stat(previewPath);
 

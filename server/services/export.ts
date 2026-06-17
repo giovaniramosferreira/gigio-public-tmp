@@ -23,13 +23,13 @@ const logger = log("export");
  */
 export async function exportPackage(videoProjectId: string): Promise<string> {
   const project = await videoRepo.findById(videoProjectId);
-  if (!project?.scriptPackageId) throw new Error("Video project has no script");
+  if (!project?.scriptPackageId) throw new Error("Projeto de vídeo não tem roteiro");
   const script = await scriptRepo.findById(project.scriptPackageId);
-  if (!script) throw new Error("Script not found for project");
+  if (!script) throw new Error("Roteiro não encontrado para o projeto");
 
   const publish = await publishRepo.findByVideo(videoProjectId);
   if (publish?.approvalStatus !== "APPROVED") {
-    throw new Error("Video must be approved before export");
+    throw new Error("O vídeo deve ser aprovado antes de exportar");
   }
 
   const slug = slugify(script.title);

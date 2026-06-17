@@ -31,11 +31,11 @@ export interface LearningInsights {
 }
 
 const TITLE_PATTERNS: Array<{ label: string; test: (t: string) => boolean }> = [
-  { label: "Starts with 'Why'", test: (t) => /^why\b/i.test(t) },
-  { label: "Starts with 'How'", test: (t) => /^how\b/i.test(t) },
-  { label: "'The hidden ...'", test: (t) => /\bhidden\b/i.test(t) },
-  { label: "'... nobody/no one ...'", test: (t) => /\b(nobody|no one)\b/i.test(t) },
-  { label: "'quiet/quietly'", test: (t) => /\bquiet(ly)?\b/i.test(t) },
+  { label: "Começa com 'Por que'", test: (t) => /^por que\b/i.test(t) },
+  { label: "Começa com 'Como'", test: (t) => /^como\b/i.test(t) },
+  { label: "'O efeito oculto ...'", test: (t) => /\b(oculto|escondido|silencioso)\b/i.test(t) },
+  { label: "'... ninguém ...'", test: (t) => /\bninguém\b/i.test(t) },
+  { label: "'silencioso/silenciosamente'", test: (t) => /\bsilencioso(amente)?\b/i.test(t) },
 ];
 
 function avg(nums: number[]): number {
@@ -60,7 +60,7 @@ export async function computeInsights(channelId: string): Promise<LearningInsigh
       durationWindows: [],
       titlePatterns: [],
       recommendations: [
-        "No analytics yet. Publish and import performance data to unlock learnings.",
+        "Nenhuma análise ainda. Publique e importe dados de desempenho para desbloquear aprendizados.",
       ],
     };
   }
@@ -75,7 +75,7 @@ export async function computeInsights(channelId: string): Promise<LearningInsigh
   // ---- Pillar performance ----
   const pillarMap = new Map<string, { views: number[]; pct: number[] }>();
   for (const r of rows) {
-    const pillar = r.videoProject.scriptPackage?.contentIdea.pillar?.name ?? "Unassigned";
+    const pillar = r.videoProject.scriptPackage?.contentIdea.pillar?.name ?? "Sem pilar";
     const bucket = pillarMap.get(pillar) ?? { views: [], pct: [] };
     bucket.views.push(r.views);
     if (r.averageViewPercentage != null) bucket.pct.push(r.averageViewPercentage);
@@ -124,7 +124,7 @@ export async function computeInsights(channelId: string): Promise<LearningInsigh
   const recommendations: string[] = [];
   if (topPillars[0]) {
     recommendations.push(
-      `"${topPillars[0].pillar}" is the strongest pillar by avg views — schedule more here.`,
+      `"${topPillars[0].pillar}" é o pilar mais forte por visualizações médias — programe mais conteúdo aqui.`,
     );
   }
   const bestDuration = durationWindows
@@ -132,12 +132,12 @@ export async function computeInsights(channelId: string): Promise<LearningInsigh
     .sort((a, b) => b.avgViewedPct - a.avgViewedPct)[0];
   if (bestDuration) {
     recommendations.push(
-      `Best retention is in the ${bestDuration.label} window — target that length.`,
+      `A melhor retenção está na janela de ${bestDuration.label} — direcione para esse comprimento.`,
     );
   }
   if (titlePatterns[0]) {
     recommendations.push(
-      `Title pattern "${titlePatterns[0].pattern}" performs best on views.`,
+      `O padrão de título "${titlePatterns[0].pattern}" tem o melhor desempenho em visualizações.`,
     );
   }
 
