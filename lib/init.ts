@@ -5,16 +5,13 @@ import { registerJobHandlers } from "@/server/jobs/handlers";
 
 const logger = log("init");
 
-let initialized = false;
+// Survive Next.js dev hot-reload by keeping the flag in globalThis,
+// same pattern used by the job queue.
+const g = globalThis as unknown as { __dtInitialized?: boolean };
 
-/**
- * One-time server bootstrap: ensure data directories exist, register job
- * handlers, and reconcile jobs orphaned by a previous process. Safe to call on
- * every request path; the body runs once per process.
- */
 export async function ensureInitialized(): Promise<void> {
-  if (initialized) return;
-  initialized = true;
+  if (g.__dtInitialized) return;
+  g.__dtInitialized = true;
 
   await ensureDataDirs();
   registerJobHandlers();
