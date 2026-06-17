@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Inbox, Lightbulb, Settings } from "lucide-react";
+import { ArrowRight, BarChart3, Inbox, Lightbulb, Settings } from "lucide-react";
 
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
@@ -40,6 +40,12 @@ interface Script {
   id: string;
 }
 
+interface Insights {
+  sampleSize: number;
+  recommendations: string[];
+  topPillars: { pillar: string; avgViews: number; videos: number }[];
+}
+
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +53,7 @@ export default function DashboardPage() {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [scripts, setScripts] = useState<Script[]>([]);
+  const [insights, setInsights] = useState<Insights | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -63,6 +70,18 @@ export default function DashboardPage() {
         setIdeas(ideasRes.ideas ?? []);
         setJobs(jobsRes.jobs ?? []);
         setScripts(scriptsRes.scripts ?? []);
+
+        // Learning loop — fire after channel is known; fails silently if no data.
+        if (channelsRes.active) {
+          try {
+            const insightsRes = await apiGet<{ insights: Insights }>(
+              `/api/analytics/channel/${channelsRes.active.id}`,
+            );
+            if (!cancelled) setInsights(insightsRes.insights);
+          } catch {
+            // No analytics data yet — expected for new channels.
+          }
+        }
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : String(e));
       } finally {
@@ -137,6 +156,46 @@ export default function DashboardPage() {
               </Card>
             ))}
           </section>
+
+          {insights && insights.sampleSize > 0 && (
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div>
+                  <CardTitle>Learning Loop</CardTitle>
+                  <CardDescription>
+                    Recommendations derived from {insights.sampleSize} video
+                    {insights.sampleSize === 1 ? "" : "s"} with performance data.
+                  </CardDescription>
+                </div>
+                <Link href="/analytics" className="text-xs text-muted-foreground hover:text-primary transition-colors">
+                  Full Report
+                  <ArrowRight className="ml-1 inline h-3 w-3" />
+                </Link>
+              </CardHeader>
+              <CardContent>
+                <ul className="flex flex-col gap-2 text-sm">
+                  {insights.recommendations.slice(0, 3).map((r, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <BarChart3 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                      <span className="text-foreground">{r}</span>
+                    </li>
+                  ))}
+                </ul>
+                {insights.topPillars.length > 0 && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {insights.topPillars.slice(0, 3).map((p) => (
+                      <span
+                        key={p.pillar}
+                        className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
+                      >
+                        {p.pillar} · {p.avgViews.toLocaleString()} avg views
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <Card>
