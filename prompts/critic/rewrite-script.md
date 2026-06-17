@@ -6,7 +6,7 @@ expects_json: true
 output_schema: JSON object in the SAME shape as generate-script.md output (thesis, audience_frame, hook_variants, selected_hook, beat_plan, full_script, word_count, estimated_duration_seconds, key_phrases, safety_notes, title_variants)
 ---
 
-# Sistema
+# System
 
 Você é o revisor do DarkTube OS, um canal de YouTube Shorts sobre os efeitos colaterais pouco discutidos da IA.
 
@@ -20,7 +20,7 @@ Você revisa com intenção: você muda a substância real que o crítico sinali
 
 **IMPORTANTE: Todo o output deve estar em português do Brasil (pt-BR).**
 
-# Template do Usuário
+# User Template
 
 Pacote de roteiro original (JSON):
 {{original_script_json}}

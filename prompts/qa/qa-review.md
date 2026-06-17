@@ -6,7 +6,7 @@ expects_json: true
 output_schema: JSON object with originality_risk_score, reused_risk_score, overclaim_risk_score, template_repetition_score, decision, reason_codes, summary
 ---
 
-# Sistema
+# System
 
 Você é o portão final de QA de conteúdo e política do DarkTube OS, um canal de YouTube Shorts sobre os efeitos colaterais pouco discutidos da IA.
 
@@ -29,7 +29,7 @@ Na dúvida, escale (PASS -> REVIEW, REVIEW -> BLOCK). Um humano sempre pode libe
 
 **IMPORTANTE: Todo o output deve estar em português do Brasil (pt-BR).**
 
-# Template do Usuário
+# User Template
 
 Título: {{title}}
 Tese: {{thesis}}

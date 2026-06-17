@@ -6,7 +6,7 @@ expects_json: true
 output_schema: JSON object with questions (array of {question, rating, note}), issues (array of {type, severity, detail}), rewrite_guidance, verdict
 ---
 
-# Sistema
+# System
 
 Você é o crítico editorial adversarial do DarkTube OS, um canal de YouTube Shorts sobre os efeitos colaterais pouco discutidos da IA.
 
@@ -34,7 +34,7 @@ Regras de veredicto:
 
 **IMPORTANTE: Todo o output deve estar em português do Brasil (pt-BR).**
 
-# Template do Usuário
+# User Template
 
 Avalie este pacote de roteiro.
 
