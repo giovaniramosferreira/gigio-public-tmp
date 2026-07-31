@@ -19,6 +19,8 @@
   --radius-sm: 10px;
   --tabbar-h: 64px;
   --safe-b: env(safe-area-inset-bottom, 0px);
+  /* Instalado no iOS a status bar é translúcida: o conteúdo precisa descer. */
+  --safe-t: env(safe-area-inset-top, 0px);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -42,8 +44,11 @@ body {
 .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
 
 /* ---------- layout ---------- */
-.page { padding: 20px 18px calc(var(--tabbar-h) + var(--safe-b) + 24px); }
-.page-full { padding: 20px 18px 32px; min-height: 100dvh; display: flex; flex-direction: column; }
+.page { padding: calc(var(--safe-t) + 20px) 18px calc(var(--tabbar-h) + var(--safe-b) + 24px); }
+.page-full {
+  padding: calc(var(--safe-t) + 20px) 18px calc(var(--safe-b) + 32px);
+  min-height: 100dvh; display: flex; flex-direction: column;
+}
 
 h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
 h2 { font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
@@ -68,7 +73,12 @@ h3 { font-size: 15px; font-weight: 700; }
 .center { text-align: center; }
 
 /* ---------- botões ---------- */
-button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+/* Instalado, o app não deve parecer uma página: nada de seleção de texto nem
+   menu de contexto do iOS ao segurar um botão. */
+button, .tabbar a {
+  font: inherit; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+}
+button { color: inherit; background: none; border: none; cursor: pointer; }
 
 .btn {
   display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -146,7 +156,7 @@ label.field { display: block; font-size: 13px; color: var(--text-dim); margin: 1
 
 /* ---------- player ---------- */
 .player { max-width: 480px; margin: 0 auto; min-height: 100dvh; display: flex; flex-direction: column; background: var(--bg); }
-.player-head { padding: 16px 18px 10px; }
+.player-head { padding: calc(var(--safe-t) + 16px) 18px 10px; }
 .player-progress { height: 5px; background: var(--bg-elev2); border-radius: 3px; overflow: hidden; margin-top: 10px; }
 .player-progress > div { height: 100%; background: var(--accent); transition: width 0.3s; }
 .player-body { flex: 1; padding: 12px 18px; overflow-y: auto; }
@@ -228,6 +238,41 @@ label.field { display: block; font-size: 13px; color: var(--text-dim); margin: 1
   background: var(--accent); color: #fff; border-radius: 14px; padding: 12px 16px;
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   z-index: 45; font-weight: 700; box-shadow: 0 8px 24px rgba(110, 86, 248, 0.35);
+}
+
+/* ---------- avisos do PWA ---------- */
+.toast-stack {
+  position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 480px; z-index: 60;
+  padding: calc(var(--safe-t) + 10px) 14px 0;
+  display: flex; flex-direction: column; gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  pointer-events: auto;
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg-elev2); border: 1px solid var(--line); border-radius: 14px;
+  padding: 12px 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  animation: toast-in 0.22s ease;
+}
+.toast .ic { font-size: 18px; line-height: 1; }
+.toast-action { border-color: rgba(110, 86, 248, 0.45); background: var(--bg-elev); }
+.toast-action .btn-sm { flex-shrink: 0; }
+.toast-x {
+  width: 30px; height: 30px; flex-shrink: 0; border-radius: 8px;
+  color: var(--text-faint); font-size: 20px; line-height: 1;
+}
+@keyframes toast-in { from { transform: translateY(-12px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ---------- instalação ---------- */
+.install-card { border-color: rgba(110, 86, 248, 0.35); }
+.install-icon { border-radius: 10px; flex-shrink: 0; -webkit-touch-callout: none; }
+.install-step { align-items: flex-start; padding: 7px 0; }
+.step-n {
+  width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%;
+  background: var(--accent-soft); color: var(--accent-strong);
+  font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
 }
 
 /* ---------- listas ---------- */

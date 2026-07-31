@@ -12,6 +12,7 @@ import Library from './pages/Library'
 import Profile from './pages/Profile'
 import TabBar from './components/TabBar'
 import MiniBar from './components/MiniBar'
+import PwaToasts from './components/PwaToasts'
 
 export default function App() {
   const profile = useStore((s) => s.profile)
@@ -24,6 +25,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      <PwaToasts />
       <Routes>
         <Route path="/" element={onboarded ? <Navigate to="/home" replace /> : <Intro />} />
         <Route path="/onboarding" element={<Onboarding />} />

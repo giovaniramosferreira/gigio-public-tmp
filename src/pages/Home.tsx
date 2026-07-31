@@ -4,6 +4,7 @@ import { useStore } from '../lib/store'
 import { byId, MUSCLE_LABEL } from '../data/exercises'
 import { greeting, sessionsThisWeek, startOfWeek } from '../lib/helpers'
 import { fmtKg } from '../lib/progression'
+import InstallCard from '../components/InstallCard'
 
 export default function Home() {
   const nav = useNavigate()
@@ -117,6 +118,10 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      <div style={{ marginTop: 12 }}>
+        <InstallCard />
+      </div>
 
       {pickDay && (
         <div className="modal-back" onClick={() => setPickDay(false)}>

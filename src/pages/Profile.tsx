@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useStore } from '../lib/store'
 import { byId, EQUIP_LABEL } from '../data/exercises'
 import type { Equipment, Goal, TrainingProfile } from '../types'
+import InstallCard from '../components/InstallCard'
+import { useOnline, useServiceWorker } from '../lib/pwa'
 
 const GOAL_LABEL: Record<Goal, string> = {
   hypertrophy: 'Ganhar músculo',
@@ -20,6 +22,8 @@ export default function Profile() {
   const exportData = useStore((s) => s.exportData)
   const resetAll = useStore((s) => s.resetAll)
   const setDraft = useStore((s) => s.setDraft)
+  const online = useOnline()
+  const { needRefresh, update } = useServiceWorker()
   const [adjust, setAdjust] = useState(false)
   const [freq, setFreq] = useState(profile.frequency)
   const [time, setTime] = useState(profile.sessionTimeMin)
@@ -93,6 +97,26 @@ export default function Profile() {
               : 'Somente peso corporal.'}
         </p>
         <p className="tiny faint" style={{ marginTop: 6 }}>Para mudar, use "Refazer perguntas".</p>
+      </div>
+
+      <div style={{ marginTop: 12 }}>
+        <InstallCard variant="settings" />
+      </div>
+
+      <div className="card" style={{ marginTop: 12 }}>
+        <h3>Versão</h3>
+        <p className="small muted" style={{ marginTop: 6 }}>
+          {needRefresh
+            ? 'Uma versão nova está pronta para ser aplicada.'
+            : online
+              ? 'Você está na versão mais recente.'
+              : 'Sem conexão — o app roda offline; a checagem de versão volta quando a internet voltar.'}
+        </p>
+        {needRefresh && (
+          <button className="btn btn-primary btn-sm" style={{ marginTop: 12 }} onClick={update}>
+            Atualizar agora
+          </button>
+        )}
       </div>
 
       <div className="card" style={{ marginTop: 12 }}>
