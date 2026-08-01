@@ -227,6 +227,16 @@ body {
   letter-spacing: -.02em;
   margin-bottom: 3rem;
 }
+.section-title + .section-note {
+  margin-top: -2rem;
+}
+.section-note {
+  max-width: 62ch;
+  margin-bottom: 3rem;
+  font-size: .95rem;
+  line-height: 1.65;
+  color: var(--text-dim);
+}
 
 /* ══════════════════════════════════════════════════════════
    HERO SECTION
