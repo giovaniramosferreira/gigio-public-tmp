@@ -1,0 +1,57 @@
+services:
+  - type: web
+    name: chamego
+    runtime: node
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: node backend/server.js
+    healthCheckPath: /api/health
+    disk:
+      name: chamego-data
+      mountPath: /var/data
+      sizeGB: 5
+    envVars:
+      - key: DATA_DIR
+        value: /var/data
+      - key: NODE_VERSION
+        value: '22'
+      - key: PUBLIC_URL
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: GMAIL_USER
+        sync: false
+      - key: GMAIL_APP_PASSWORD
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_MENSAL
+        sync: false
+      - key: STRIPE_PRICE_ANUAL
+        sync: false
+      - key: STRIPE_PRICE_PRESENTE_3M
+        sync: false
+      - key: STRIPE_PRICE_PRESENTE_6M
+        sync: false
+      - key: STRIPE_PRICE_PRESENTE_12M
+        sync: false
+      - key: STRIPE_PIX
+        sync: false
+      - key: ADMIN_KEY
+        generateValue: true
+      - key: ANTHROPIC_API_KEY
+        sync: false

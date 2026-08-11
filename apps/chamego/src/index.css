@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f6f0e7;
+  --surface: #fffdf8;
+  --bg-tint: #efe6d8;
+  --accent: #bd6a4b;
+  --accent-press: #a5573b;
+  --accent-ink: #fff8f2;
+  --ink: #2b2521;
+  --ink-2: #6f645b;
+  --ink-3: #a89d93;
+  --line: color-mix(in srgb, var(--ink) 11%, transparent);
+  --line-2: color-mix(in srgb, var(--ink) 18%, transparent);
+  --accent-soft: color-mix(in srgb, var(--accent) 13%, var(--surface));
+  --accent-line: color-mix(in srgb, var(--accent) 30%, transparent);
+  --ease: cubic-bezier(.22, .61, .36, 1);
+  /* Faixa do sistema no topo (relógio/bateria). Em variável, e não no `env()`
+     direto, pra dar pra simular um iPhone com entalhe no teste automatizado. */
+  --sat: env(safe-area-inset-top, 0px);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* A faixa do relógio e da bateria do iPhone.
+   O app pede `viewport-fit=cover` (é o que faz a barra de baixo respeitar a
+   linha do home indicator), e o preço disso é que a página começa ATRÁS do
+   relógio. Sem as duas regras abaixo, o cabeçalho nasce por baixo da hora e
+   todo conteúdo que rola passa embaralhado com os ícones do sistema. */
+#root {
+  padding-top: var(--sat);
+}
+
+/* Tampa opaca sobre a área do sistema: o que rola some por baixo dela em vez
+   de aparecer misturado com a hora.
+   A camada é 35 de propósito: acima do conteúdo que rola e do botão flutuante
+   (30), mas ABAIXO das folhas (40) e dos avisos (50) — senão, com uma folha
+   aberta, apareceria uma faixa clara em cima do véu escuro. */
+.safe-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--sat);
+  background: var(--bg);
+  z-index: 35;
+  pointer-events: none;
+}
+
+::selection { background: var(--accent); color: var(--accent-ink); }
+
+/* Avisos (toasts) sobem de baixo, junto da tab bar */
+.toast-enter { animation: toastIn .22s var(--ease); }
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Transição entre telas do app (fade + slide sutil do handoff) */
+.screen-enter {
+  animation: screenIn .3s var(--ease);
+}
+@keyframes screenIn {
+  from { opacity: 0; transform: translateX(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Bottom sheet: sobe de baixo */
+.sheet-enter { animation: sheetIn .28s var(--ease); }
+@keyframes sheetIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-enter, .sheet-enter { animation: none; }
+}
