@@ -1,10 +1,11 @@
 # Resultados
 
-**Status: não executado.**
+| Rodada | Data | Status |
+|---|---|---|
+| [0 — base vazia](rodada-0.md) | 11/08/2026 | Executada |
+| 1 — primeira recuperação | — | Não executada |
+| 2 — dependência cruzada | — | Não executada |
+| 3 — envenenamento | — | Não executada |
+| 4 — custo do processo | — | Não executada |
 
-A estrutura, as personas e o protocolo estão prontos. As tarefas ainda não foram definidas
-e nenhuma rodada foi rodada.
-
-Este arquivo existe para deixar isso explícito: qualquer número publicado aqui antes da
-execução seria inventado. Quando a rodada acontecer, o resultado entra com data, tarefas
-usadas, métricas do protocolo e as hipóteses que caíram.
+Nenhum número aqui é estimado. Rodada sem execução fica marcada como não executada.
