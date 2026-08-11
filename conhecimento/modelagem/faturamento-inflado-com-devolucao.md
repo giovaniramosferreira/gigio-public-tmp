@@ -1,11 +1,12 @@
 ---
 sintoma: "faturamento do relatorio nao bate com o do sistema origem, sempre para mais"
 escopo: [modelagem, varejo, camada:fato]
+tambem_aparece_como: "quantidade negativa nas linhas de venda; devolucao sumiu do relatorio; nota de credito comecando com C; devolucoes por produto"
 autor: bruno.carvalho
 criado: 2026-08-11
 valida_ate: 2026-11-09
-status: bronze
-reusos: 0
+status: ouro
+reusos: 1
 ---
 
 ## Contexto

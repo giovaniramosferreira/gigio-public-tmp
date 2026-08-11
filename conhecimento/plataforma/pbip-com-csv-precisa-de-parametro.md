@@ -1,11 +1,12 @@
 ---
 sintoma: "PBIP abre mas todas as tabelas falham ao atualizar em outra maquina"
 escopo: [power-bi, pbip, portabilidade]
+tambem_aparece_como: "tabelas falham ao atualizar em outra maquina; caminho do arquivo nao encontrado no Power Query; projeto abre mas dados nao carregam"
 autor: diego.nakamura
 criado: 2026-08-11
 valida_ate: 2026-11-09
-status: bronze
-reusos: 0
+status: ouro
+reusos: 1
 ---
 
 ## Contexto

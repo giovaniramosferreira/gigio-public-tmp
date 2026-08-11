@@ -1,6 +1,7 @@
 ---
 sintoma: "arquivo .pbix gerado por script nao abre no Power BI Desktop"
 escopo: [power-bi, versionamento, automacao]
+tambem_aparece_como: "como versionar relatorio Power BI no git; gerar relatorio por script; conflito de merge em arquivo pbix"
 autor: thiago.mendes
 criado: 2026-08-11
 valida_ate: 2026-11-09

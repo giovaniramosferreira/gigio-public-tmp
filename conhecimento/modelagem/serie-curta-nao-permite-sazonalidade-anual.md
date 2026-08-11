@@ -1,11 +1,12 @@
 ---
 sintoma: "modelo sazonal anual nao converge ou devolve resultado sem sentido"
 escopo: [modelagem, series-temporais, previsao-de-vendas]
+tambem_aparece_como: "quanto historico preciso para modelar sazonalidade; poucos meses de dados para previsao; modelo sazonal com serie curta"
 autor: larissa.antunes
 criado: 2026-08-11
 valida_ate: 2027-02-11
-status: bronze
-reusos: 0
+status: ouro
+reusos: 1
 ---
 
 ## Contexto

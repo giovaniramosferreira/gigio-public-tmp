@@ -1,6 +1,7 @@
 ---
 sintoma: "medida DAX com CALCULATE aninhado leva mais de 20s para renderizar"
 escopo: [power-bi, dax, camada:gold]
+tambem_aparece_como: "visual do Power BI demorando para carregar; medida DAX lenta; CALCULATE aninhado lento"
 autor: diego.nakamura
 criado: 2026-08-06
 valida_ate: 2026-11-04

@@ -1,6 +1,7 @@
 ---
 sintoma: "entregavel de Power BI feito por agente so falha quando um humano abre"
 escopo: [power-bi, processo, revisao]
+tambem_aparece_como: "entregavel gerado mas nao testado; como revisar artefato de Power BI feito por agente"
 autor: camila.ferraz
 criado: 2026-08-11
 valida_ate: 2027-02-11

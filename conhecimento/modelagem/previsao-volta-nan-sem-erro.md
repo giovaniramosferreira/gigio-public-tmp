@@ -1,11 +1,12 @@
 ---
 sintoma: "modelo de suavizacao exponencial devolve previsao NaN sem levantar erro"
 escopo: [modelagem, series-temporais, statsmodels]
+tambem_aparece_como: "MAPE volta NaN; serie temporal com periodo faltando; semana sem registro na serie; suavizacao exponencial sem resultado"
 autor: rafael.bittencourt
 criado: 2026-08-11
 valida_ate: 2026-11-09
-status: bronze
-reusos: 0
+status: ouro
+reusos: 1
 ---
 
 ## Contexto

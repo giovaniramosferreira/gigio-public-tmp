@@ -1,6 +1,7 @@
 ---
 sintoma: "cluster preso em Pending por mais de 10 minutos"
 escopo: [databricks, compute]
+tambem_aparece_como: "cluster preso em Pending; ambiente demorando para iniciar de manha"
 autor: eduardo.sampaio
 criado: 2026-07-28
 valida_ate: 2026-10-26

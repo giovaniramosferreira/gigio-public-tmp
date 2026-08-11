@@ -1,6 +1,7 @@
 ---
 sintoma: "vendas aparecem em meses errados depois de carregar CSV com data"
 escopo: [etl, pandas, csv, ingestao]
+tambem_aparece_como: "data no formato americano trocando dia e mes; periodo da serie maior que o esperado; mes errado depois da ingestao"
 autor: bruno.carvalho
 criado: 2026-08-11
 valida_ate: 2026-11-09

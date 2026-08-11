@@ -1,6 +1,7 @@
 ---
 sintoma: "PERMISSION_DENIED: User does not have SELECT on Table"
 escopo: [databricks, unity-catalog]
+tambem_aparece_como: "sem acesso a tabela do catalogo; grant aplicado mas continua negando; USE CATALOG faltando"
 autor: eduardo.sampaio
 criado: 2026-08-04
 valida_ate: 2026-11-02
