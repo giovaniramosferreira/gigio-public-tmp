@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Giovani Ferreira — Engenharia de IA e Dados</title>
+<meta name="description" content="15 anos de engenharia de dados, hoje construindo sistemas com LLM em produção. Pipelines, agentes e produtos de IA aplicada." />
+<meta property="og:title" content="Giovani Ferreira — Engenharia de IA e Dados" />
+<meta property="og:description" content="15 anos de engenharia de dados, hoje construindo sistemas com LLM em produção." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="masthead">
+  <span class="mono tag">Giovani Ramos Ferreira</span>
+  <nav class="mast-nav mono">
+    <a href="#sistemas">01 Sistemas</a>
+    <a href="#decisoes">02 Decisões</a>
+    <a href="#dados">03 Dados</a>
+    <a href="#contato">04 Contato</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ══ HERO ══ -->
+  <section id="hero">
+    <div class="rule-top mono">
+      <span>Engenharia de IA &amp; Dados</span>
+      <span>São Paulo · Brasil</span>
+      <span class="hide-sm">Doc. rev. 2026.08</span>
+    </div>
+
+    <h1 class="display">
+      Quinze anos<br />
+      lendo dados.<br />
+      <em>Agora ensinando<br />máquinas a lê-los.</em>
+    </h1>
+
+    <div class="hero-grid">
+      <p class="lede">
+        Comecei em modelagem dimensional, DAX e pipelines — Power BI, Spark, Kafka.
+        Hoje construo sistemas onde o LLM é uma peça de produção: com autenticação,
+        teto de custo, trilha de auditoria e falha prevista.
+      </p>
+      <dl class="spec mono">
+        <div><dt>Experiência</dt><dd>15 anos com dados</dd></div>
+        <div><dt>Trajetória</dt><dd>Freelas de BI · AMPLIX</dd></div>
+        <div><dt>Formação</dt><dd>Eng. de Dados — PUC Minas</dd></div>
+        <div><dt>Foco atual</dt><dd>LLM em produção</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ══ SISTEMAS ══ -->
+  <section id="sistemas">
+    <div class="sec-head">
+      <span class="mono sec-num">01</span>
+      <h2 class="display">Sistemas em produção</h2>
+      <p class="mono sec-note">Código aberto. Links vão para o repositório.</p>
+    </div>
+
+    <article class="entry">
+      <div class="entry-meta mono">
+        <span class="idx">01.1</span>
+        <span class="stack">Next.js · Anthropic SDK · Supabase · Instagram Graph API</span>
+      </div>
+      <h3 class="display"><a href="https://github.com/giovaniramosferreira/viralpost">ViralPost</a></h3>
+      <p class="entry-lede">
+        Pipeline que lê vídeos em alta no YouTube, extrai a tese com Claude e publica
+        o carrossel resultante no Instagram — sem intervenção humana no ciclo.
+      </p>
+      <div class="entry-body">
+        <div class="dec">
+          <span class="mono dec-label">Decisão</span>
+          <p>Teto de três vídeos por execução do cron.</p>
+        </div>
+        <div class="dec">
+          <span class="mono dec-label">Por quê</span>
+          <p>
+            Transcrição e geração são as etapas caras. O limite mantém cada rodada
+            dentro do timeout de serverless e torna o custo de API previsível por
+            execução, em vez de proporcional ao que o YouTube devolver naquele dia.
+          </p>
+        </div>
+        <div class="dec">
+          <span class="mono dec-label">Custo</span>
+          <p>
+            Backlog cresce se o volume de tendência subir. Aceito: a tabela
+            <code>cron_runs</code> registra cada rodada, então a fila é observável
+            antes de virar problema.
+          </p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry">
+      <div class="entry-meta mono">
+        <span class="idx">01.2</span>
+        <span class="stack">Python · Flask · Apify · Anthropic SDK</span>
+      </div>
+      <h3 class="display">Auraviz <span class="mono priv">repo privado</span></h3>
+      <p class="entry-lede">
+        Inteligência competitiva para padarias: coleta avaliações públicas, compara
+        estabelecimentos vizinhos e gera relatório estratégico com IA.
+      </p>
+      <div class="entry-body">
+        <div class="dec">
+          <span class="mono dec-label">Decisão</span>
+          <p>Repositório fechado, apesar do resto do portfólio ser aberto.</p>
+        </div>
+        <div class="dec">
+          <span class="mono dec-label">Por quê</span>
+          <p>
+            A base de seed contém dados reais raspados do Google Maps — nome, endereço
+            e telefone de estabelecimentos existentes. Publicar o repositório
+            redistribuiria dado pessoal de terceiro coletado por scraping.
+          </p>
+        </div>
+        <div class="dec">
+          <span class="mono dec-label">Custo</span>
+          <p>
+            Perco o projeto como vitrine pública. Vale: a alternativa era reescrever
+            o histórico do git para expor um pipeline cuja parte defensável é
+            justamente a que eu não quero copiada.
+          </p>
+        </div>
+      </div>
+    </article>
+
+    <article class="entry">
+      <div class="entry-meta mono">
+        <span class="idx">01.3</span>
+        <span class="stack">Next.js · Prisma · Vitest</span>
+      </div>
+      <h3 class="display"><a href="https://github.com/giovaniramosferreira/dark">DarkTube OS</a></h3>
+      <p class="entry-lede">
+        Console local-first para operar um canal de YouTube Shorts sobre os efeitos
+        colaterais da IA — da descoberta de pauta ao pacote de exportação.
+      </p>
+      <div class="entry-body">
+        <div class="dec">
+          <span class="mono dec-label">Decisão</span>
+          <p>Portões de originalidade antes da geração, não depois.</p>
+        </div>
+        <div class="dec">
+          <span class="mono dec-label">Por quê</span>
+          <p>
+            Canal monetizado morre por conteúdo derivativo. Barrar a pauta repetida
+            na entrada custa uma chamada; descobrir isso depois do vídeo pronto
+            custa o vídeo inteiro — e, no limite, a monetização.
+          </p>
+        </div>
+      </div>
+    </article>
+
+    <div class="entry-row">
+      <article class="mini">
+        <div class="entry-meta mono"><span class="idx">01.4</span></div>
+        <h3 class="display"><a href="https://github.com/giovaniramosferreira/poup">Poup</a></h3>
+        <p>Dashboard financeiro que importa extrato do Nubank e devolve leitura, não planilha.</p>
+        <span class="mono stack">Next.js · Supabase</span>
+      </article>
+      <article class="mini">
+        <div class="entry-meta mono"><span class="idx">01.5</span></div>
+        <h3 class="display"><a href="https://github.com/giovaniramosferreira/chamego">Chamego</a></h3>
+        <p>Organização da vida a dois. Sobreviveu a um pivot em julho de 2026 — o produto anterior vive num branch.</p>
+        <span class="mono stack">React 19 · Express · SQLite</span>
+      </article>
+      <article class="mini">
+        <div class="entry-meta mono"><span class="idx">01.6</span></div>
+        <h3 class="display"><a href="https://github.com/giovaniramosferreira/winfit">WinFit</a></h3>
+        <p>Treinador de musculação de bolso: monta, guia e evolui o treino.</p>
+        <span class="mono stack">React · TypeScript · Vite</span>
+      </article>
+      <article class="mini">
+        <div class="entry-meta mono"><span class="idx">01.7</span></div>
+        <h3 class="display"><a href="https://github.com/giovaniramosferreira/promo-bot">Bots de preço</a></h3>
+        <p>Dois bots Telegram: divulgação de promoção de e-commerce e monitoramento de preço na Amazon.</p>
+        <span class="mono stack">Python · Docker</span>
+      </article>
+    </div>
+  </section>
+
+  <!-- ══ DECISÕES ══ -->
+  <section id="decisoes">
+    <div class="sec-head">
+      <span class="mono sec-num">02</span>
+      <h2 class="display">Como eu decido</h2>
+    </div>
+
+    <div class="principles">
+      <div class="principle">
+        <span class="mono p-num">i</span>
+        <h4 class="display">Custo é requisito, não consequência</h4>
+        <p>
+          Chamada de LLM tem preço por token e teto de latência. Trato os dois como
+          restrição de projeto desde o desenho — truncar transcrição em 8.000
+          caracteres é decisão de arquitetura, não otimização posterior.
+        </p>
+      </div>
+      <div class="principle">
+        <span class="mono p-num">ii</span>
+        <h4 class="display">Todo processo autônomo deixa rastro</h4>
+        <p>
+          Se roda sem ninguém olhando, grava o que fez. Tabela de execuções, status,
+          erro capturado. Sistema autônomo sem trilha não é automatizado — é opaco.
+        </p>
+      </div>
+      <div class="principle">
+        <span class="mono p-num">iii</span>
+        <h4 class="display">Segredo fora do código, sempre</h4>
+        <p>
+          Varredura de histórico com <code>gitleaks</code> antes de qualquer repositório
+          mudar de visibilidade. Encontrei os meus, rotacionei e movi para variável
+          de ambiente — antes de abrir, não depois.
+        </p>
+      </div>
+      <div class="principle">
+        <span class="mono p-num">iv</span>
+        <h4 class="display">Modelagem antes de modelo</h4>
+        <p>
+          Quinze anos em star schema e window function ensinam que a maior parte dos
+          problemas ditos "de IA" é problema de dado mal estruturado. O LLM entra
+          depois que o modelo de dados está de pé.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ DADOS ══ -->
+  <section id="dados">
+    <div class="sec-head">
+      <span class="mono sec-num">03</span>
+      <h2 class="display">Base de dados</h2>
+      <p class="mono sec-note">A engenharia que veio antes da IA.</p>
+    </div>
+
+    <ul class="ledger">
+      <li>
+        <a href="https://giovaniramosferreira.github.io/PowerBi_Portifolio/">
+          <span class="display l-title">Portfólio Power BI</span>
+          <span class="mono l-desc">Seis estudos de caso — modelagem dimensional, DAX, RLS, DirectQuery</span>
+          <span class="mono l-tag">página no ar</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/giovaniramosferreira/Sistema-de-Recomenda-o-em-Tempo-Real-com-Apache-Spark-e-MongoDB">
+          <span class="display l-title">Recomendação em tempo real</span>
+          <span class="mono l-desc">ALS no Apache Spark com persistência em MongoDB</span>
+          <span class="mono l-tag">Spark · MongoDB</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/giovaniramosferreira/Apache-Flume-e-Kafka">
+          <span class="display l-title">Ingestão com Kafka e Flume</span>
+          <span class="mono l-desc">Agentes de spool para tópico, produção e consumo</span>
+          <span class="mono l-tag">Kafka · Flume</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/giovaniramosferreira/mongodb_cluster_on_docker">
+          <span class="display l-title">Cluster MongoDB em Docker</span>
+          <span class="mono l-desc">Replicaset e sharding para catálogo distribuído</span>
+          <span class="mono l-tag">MongoDB · Docker</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ══ CONTATO ══ -->
+  <section id="contato">
+    <div class="sec-head">
+      <span class="mono sec-num">04</span>
+      <h2 class="display">Contato</h2>
+    </div>
+    <div class="contact-grid">
+      <a class="c-card" href="https://github.com/giovaniramosferreira">
+        <span class="mono c-label">Código</span>
+        <span class="display c-value">GitHub</span>
+        <span class="mono c-hint">/giovaniramosferreira</span>
+      </a>
+      <a class="c-card" href="https://www.linkedin.com/in/giovaniramosferreira">
+        <span class="mono c-label">Rede</span>
+        <span class="display c-value">LinkedIn</span>
+        <span class="mono c-hint">/in/giovaniramosferreira</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="mono">
+  <span>Giovani Ramos Ferreira</span>
+  <span class="hide-sm">Construído sem framework — HTML, CSS e JavaScript</span>
+  <span>2026</span>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
