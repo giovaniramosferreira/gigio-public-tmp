@@ -1,0 +1,14 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/run?secret=viralpost-secret-2024",
+      "schedule": "0 10 * * *"
+    }
+  ],
+  "functions": {
+    "app/api/videos/generate/route.ts": { "maxDuration": 300 },
+    "app/api/videos/fetch/route.ts":    { "maxDuration": 60  },
+    "app/api/videos/from-url/route.ts": { "maxDuration": 30  },
+    "app/api/cron/run/route.ts":        { "maxDuration": 300 }
+  }
+}
