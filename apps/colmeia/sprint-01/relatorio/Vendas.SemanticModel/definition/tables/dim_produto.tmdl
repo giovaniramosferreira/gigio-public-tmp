@@ -1,0 +1,41 @@
+table dim_produto
+
+	lineageTag: fd96e00c-1e86-5a29-afad-e89aae37f3fb
+
+	column CodigoProduto
+		dataType: string
+		isKey
+		lineageTag: b4ff7086-d3a9-5957-98ce-c441c7598b08
+		summarizeBy: none
+		sourceColumn: CodigoProduto
+
+	column Descricao
+		dataType: string
+		lineageTag: 6df52d5c-e241-5453-8eb6-e4fda8cb6361
+		summarizeBy: none
+		sourceColumn: Descricao
+
+	column PrecoMedio
+		dataType: double
+		formatString: "#,0.00"
+		lineageTag: 40496a14-355b-58f5-9d1a-7460279a4bba
+		summarizeBy: none
+		sourceColumn: PrecoMedio
+
+	column FaixaPreco
+		dataType: string
+		lineageTag: 6e45319c-005c-54ba-aa99-55b78611c359
+		summarizeBy: none
+		sourceColumn: FaixaPreco
+
+	partition dim_produto = m
+		mode: import
+		source =
+			let
+				Fonte = Csv.Document(File.Contents(PastaDados & "\dim_produto.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				Cabecalho = Table.PromoteHeaders(Fonte, [PromoteAllScalars = true]),
+				Tipos = Table.TransformColumnTypes(Cabecalho, {{"CodigoProduto", type text}, {"Descricao", type text}, {"PrecoMedio", type number}, {"FaixaPreco", type text}})
+			in
+				Tipos
+
+	annotation PBI_ResultType = Table

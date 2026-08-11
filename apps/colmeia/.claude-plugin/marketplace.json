@@ -1,0 +1,11 @@
+{
+  "name": "colmeia",
+  "owner": { "name": "Time de Modelagem e BI" },
+  "plugins": [
+    {
+      "name": "colmeia-core",
+      "source": "./plugins/colmeia-core",
+      "description": "Contrato de trabalho, captura e recuperação de conhecimento do time."
+    }
+  ]
+}

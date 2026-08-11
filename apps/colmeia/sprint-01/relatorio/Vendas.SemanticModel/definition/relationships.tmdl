@@ -1,0 +1,15 @@
+relationship b048eb12-0fc5-55c3-81d5-c813e8076749
+
+	fromColumn: fato_vendas.Data
+	toColumn: dim_calendario.Data
+
+relationship 7272799e-a19f-5f82-9764-4cb5eb2487a5
+
+	fromColumn: fato_vendas.CodigoProduto
+	toColumn: dim_produto.CodigoProduto
+
+relationship 792b83c2-e56f-5947-8506-b1f1de36a2ff
+
+	fromColumn: fato_vendas.ChaveCliente
+	toColumn: dim_cliente.ChaveCliente
+

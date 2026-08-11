@@ -1,0 +1,52 @@
+table dim_cliente
+
+	lineageTag: ad09a77e-d56d-5e1f-ac78-d49dd365344f
+
+	column ChaveCliente
+		dataType: int64
+		formatString: "0"
+		isKey
+		lineageTag: fce2c035-4d31-5a95-b3b7-8a96d195366f
+		summarizeBy: none
+		sourceColumn: ChaveCliente
+
+	column PrimeiraCompra
+		dataType: dateTime
+		formatString: "Short Date"
+		lineageTag: 45536376-b8db-56ad-8474-3e65728b0c0f
+		summarizeBy: none
+		sourceColumn: PrimeiraCompra
+		annotation UnderlyingDateTimeDataType = Date
+
+	column UltimaCompra
+		dataType: dateTime
+		formatString: "Short Date"
+		lineageTag: 07d87560-c9c4-58e0-b958-03c2ffe14d8f
+		summarizeBy: none
+		sourceColumn: UltimaCompra
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Pedidos
+		dataType: int64
+		formatString: "0"
+		lineageTag: 06dd47ea-3c72-5742-a8dc-c086d31476d6
+		summarizeBy: none
+		sourceColumn: Pedidos
+
+	column TipoCliente
+		dataType: string
+		lineageTag: ecde2657-f65e-56d5-9420-a8a2f14d9978
+		summarizeBy: none
+		sourceColumn: TipoCliente
+
+	partition dim_cliente = m
+		mode: import
+		source =
+			let
+				Fonte = Csv.Document(File.Contents(PastaDados & "\dim_cliente.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				Cabecalho = Table.PromoteHeaders(Fonte, [PromoteAllScalars = true]),
+				Tipos = Table.TransformColumnTypes(Cabecalho, {{"ChaveCliente", Int64.Type}, {"PrimeiraCompra", type date}, {"UltimaCompra", type date}, {"Pedidos", Int64.Type}, {"TipoCliente", type text}})
+			in
+				Tipos
+
+	annotation PBI_ResultType = Table
