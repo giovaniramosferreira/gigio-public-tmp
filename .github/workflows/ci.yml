@@ -1,0 +1,21 @@
+name: colmeia
+
+on:
+  pull_request:
+    paths: ["conhecimento/**", "AGENTS.md", "plugins/**"]
+  push:
+    branches: [main]
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Validar entradas de conhecimento
+        run: python3 scripts/validar.py
+      - name: Listar entradas vencidas
+        run: python3 scripts/validar.py --vencidas
+      - name: Placar
+        run: python3 scripts/placar.py
