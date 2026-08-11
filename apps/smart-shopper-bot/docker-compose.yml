@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  smart-shopper:
+    build: .
+    image: smart-shopper-bot
+    container_name: smart-shopper
+    restart: always
+    volumes:
+      - ./smart_shopper.db:/app/smart_shopper.db
+    environment:
+      - TZ=America/Sao_Paulo
