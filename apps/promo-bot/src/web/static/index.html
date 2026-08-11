@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promo Bot | Dashboard</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap Grid Only (opcional, mas ajuda nos formulários) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap-grid.min.css" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link href="/static/styles.css" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand-area" title="Clique para trocar foto">
+                <div class="brand-icon" id="profileToggle" onclick="document.getElementById('profileInput').click()">
+                    <i data-lucide="user" id="profilePlaceholder"></i>
+                    <img id="profileImage" src="" style="display:none; width:100%; height:100%; object-fit:cover;">
+                </div>
+                <div class="brand-text">
+                    <h1>Promo Bot</h1>
+                    <span>v2.0 Dashboard</span>
+                </div>
+            </div>
+            <input type="file" id="profileInput" style="display:none" accept="image/*" onchange="uploadProfile(this)">
+
+            <nav class="nav-menu">
+                <div class="nav-item active" onclick="showPage('send', this)">
+                    <i data-lucide="send"></i>
+                    <span>Enviar Manual</span>
+                </div>
+                <div class="nav-item" onclick="showPage('amazon', this)">
+                    <i data-lucide="package"></i>
+                    <span>Amazon</span>
+                </div>
+                <div class="nav-item" onclick="showPage('queue', this); loadQueue()">
+                    <i data-lucide="list"></i>
+                    <span>Fila de Envios</span>
+                </div>
+                <div class="nav-item" onclick="showPage('history', this); loadHistory()">
+                    <i data-lucide="history"></i>
+                    <span>Histórico</span>
+                </div>
+                <div class="nav-item" onclick="showPage('stats', this); loadStats()">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Estatísticas</span>
+                </div>
+                <div class="nav-item" onclick="showPage('welcome', this)">
+                    <i data-lucide="pin"></i>
+                    <span>Boas-Vindas</span>
+                </div>
+                <!-- Nova aba para configurações -->
+                <div class="nav-item" onclick="showPage('settings', this); loadSettings()">
+                    <i data-lucide="settings"></i>
+                    <span>Ajustes</span>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <nav class="nav-menu">
+                    <div class="nav-item" onclick="showPage('settings', this); loadSettings()">
+                        <i data-lucide="settings"></i> <span>Ajustes</span>
+                    </div>
+                    <div class="nav-item" onclick="location.reload()">
+                        <i data-lucide="log-out"></i> <span>Recarregar</span>
+                    </div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- PAGE: MANUAL SEND -->
+            <div id="page-send" class="page-section">
+                <header class="page-header">
+                    <h2 class="page-title">Envio Manual</h2>
+                    <p class="page-subtitle">Crie e envie promoções personalizadas agora mesmo.</p>
+                </header>
+
+                <div class="card" style="max-width: 800px">
+                    <label class="form-label">Sua Mensagem</label>
+                    <div class="emoji-bar mb-3 d-flex align-items-center gap-2">
+                        <span onclick="addEmoji('🔥')">🔥</span>
+                        <span onclick="addEmoji('📦')">📦</span>
+                        <span onclick="addEmoji('💰')">💰</span>
+                        <span onclick="addEmoji('⭐')">⭐</span>
+                        <span onclick="addEmoji('🚨')">🚨</span>
+                        <span onclick="addEmoji('👆')">👆</span>
+                        <div style="width:1px; height:24px; background:#333; margin:0 8px;"></div>
+                        <span onclick="document.getElementById('imageInput').click()" title="Anexar Foto">📷</span>
+                    </div>
+
+                    <!-- Image Preview Area -->
+                    <div id="imagePreviewContainer" class="image-preview-container d-none">
+                        <img id="imagePreview" class="image-preview" src="">
+                        <div class="btn-remove-image" onclick="removeImage()">✕</div>
+                    </div>
+
+                    <textarea class="form-control mb-4" id="message" rows="8"
+                        placeholder="Escreva aqui sua oferta..."></textarea>
+                    <input type="file" id="imageInput" accept="image/*" class="d-none"
+                        onchange="handleImageSelect(this)">
+
+                    <button class="btn btn-primary" onclick="sendMessage()" id="btnSend">Enviar Agora 📤</button>
+                </div>
+            </div>
+
+            <!-- PAGE: AMAZON -->
+            <div id="page-amazon" class="page-section d-none">
+                <header class="page-header">
+                    <h2 class="page-title">Amazon Link</h2>
+                    <p class="page-subtitle">Cole um link e deixe o robô fazer a mágica.</p>
+                </header>
+
+                <div class="card" style="max-width: 800px">
+                    <label class="form-label">Link do Produto</label>
+                    <input type="url" class="form-control mb-4" id="amazonUrl"
+                        placeholder="https://www.amazon.com.br/...">
+
+                    <button class="btn btn-primary" onclick="sendLink()" id="btnLink">Processar Link 🚀</button>
+
+                    <p class="text-secondary mt-3 small">O produto será enviado para o seu privado para aprovação.</p>
+                </div>
+            </div>
+
+            <!-- PAGE: QUEUE -->
+            <div id="page-queue" class="page-section d-none">
+                <header class="page-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="page-title">Fila de Envios</h2>
+                        <p class="page-subtitle">Itens aguardando publicação automática (a cada 20min).</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="sendNow()">⚡ Enviar Próximo</button>
+                </header>
+
+                <div id="queueList" class="queue-container">
+                    <!-- JS Populates -->
+                </div>
+                <div id="queueStatus" class="status-toast d-none"></div>
+            </div>
+
+            <!-- PAGE: HISTORY -->
+            <div id="page-history" class="page-section d-none">
+                <header class="page-header">
+                    <h2 class="page-title">Histórico recente</h2>
+                    <p class="page-subtitle">Últimos 30 envios realizados.</p>
+                </header>
+                <div id="historyList">
+                    <!-- JS Populates -->
+                </div>
+            </div>
+
+            <!-- PAGE: STATS -->
+            <div id="page-stats" class="page-section d-none">
+                <header class="page-header">
+                    <h2 class="page-title">Estatísticas</h2>
+                    <p class="page-subtitle">Performance do seu robô.</p>
+                </header>
+
+            </div>
+
+            <!-- Clicks Chart -->
+            <div class="card mt-4">
+                <h4 class="text-white mb-4">Cliques nas últimas 24h</h4>
+                <div style="height: 300px;">
+                    <canvas id="clicksChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Links -->
+            <div class="card mt-4 text-white">
+                <h4 class="mb-4">Top 5 Links Mais Clicados</h4>
+                <div id="topLinksList">
+                    <!-- JS Populates -->
+                </div>
+            </div>
+    </div>
+
+    <!-- PAGE: WELCOME -->
+    <div id="page-welcome" class="page-section d-none">
+        <header class="page-header">
+            <h2 class="page-title">Boas-Vindas</h2>
+            <p class="page-subtitle">Mensagem fixada no topo do canal.</p>
+        </header>
+
+        <div class="card" style="max-width: 800px">
+            <label class="form-label">Conteúdo da Mensagem</label>
+            <textarea class="form-control mb-4" id="welcomeMessage" rows="10">👋 BEM-VINDO AO CANAL!
+
+Aqui você encontra as MELHORES ofertas! 🔥</textarea>
+
+            <button class="btn btn-primary" onclick="sendWelcome()" id="btnWelcome">Fixar no Canal 📌</button>
+            <div id="welcomeStatus" class="d-none"></div>
+        </div>
+    </div>
+
+    <!-- PAGE: SETTINGS -->
+    <div id="page-settings" class="page-section d-none">
+        <header class="page-header">
+            <h2 class="page-title">Ajustes</h2>
+            <p class="page-subtitle">Configurações globais do sistema.</p>
+        </header>
+
+        <div class="card" style="max-width: 800px">
+            <div class="row g-4">
+                <div class="col-12">
+                    <h4 class="text-white mb-3">Telegram Config</h4>
+                    <label class="form-label">Bot Token</label>
+                    <input type="password" class="form-control mb-3" id="cfg_telegram_bot_token"
+                        placeholder="•••••••••">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">Channel ID</label>
+                            <input type="text" class="form-control" id="cfg_telegram_channel_id">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Admin ID</label>
+                            <input type="text" class="form-control" id="cfg_telegram_admin_id">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 border-top border-secondary pt-4 mt-4">
+                    <h4 class="text-white mb-3">Amazon Config</h4>
+                    <label class="form-label">Partner Tag</label>
+                    <input type="text" class="form-control" id="cfg_amazon_partner_tag">
+                </div>
+            </div>
+
+            <div class="mt-5 text-end">
+                <button class="btn btn-secondary me-2" onclick="location.reload()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveSettings()">Salvar & Reiniciar</button>
+            </div>
+            <div id="settingsStatus" class="status-toast d-none"></div>
+        </div>
+    </div>
+
+    </main>
+
+    <!-- Global Toasts -->
+    <div id="status" class="status-toast d-none"></div>
+    <div id="statusLink" class="status-toast d-none"></div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // === PROFILE IMAGE HANDLE ===
+        function loadProfileImage() {
+            const img = document.getElementById('profileImage');
+            const placeholder = document.getElementById('profilePlaceholder');
+            const container = document.getElementById('profileToggle');
+            const imgUrl = "/static/profile.png?t=" + new Date().getTime();
+
+            const testImg = new Image();
+            testImg.onload = function () {
+                img.src = imgUrl;
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+                container.style.background = 'transparent';
+            };
+            testImg.onerror = function () {
+                img.style.display = 'none';
+                placeholder.style.display = 'block';
+            };
+            testImg.src = imgUrl;
+        }
+
+        // Initial Load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProfileImage();
+            lucide.createIcons();
+            // Carrega fila inicial se estiver na pagina fila? Não, deixa logica padrao
+        });
+
+        async function uploadProfile(input) {
+            if (!input.files || !input.files[0]) return;
+
+            const formData = new FormData();
+            formData.append("file", input.files[0]);
+
+            // Feedback visual
+            const icon = document.querySelector('.brand-icon');
+            icon.style.opacity = '0.5';
+
+            try {
+                const response = await fetch('/upload-profile', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Recarrega imagem
+                    loadProfileImage();
+                    showStatus('Foto de perfil atualizada! 📸', 'success');
+                } else {
+                    showStatus('Erro ao salvar foto.', 'danger');
+                }
+            } catch (e) {
+                showStatus('Erro conexão upload.', 'danger');
+            } finally {
+                icon.style.opacity = '1';
+                input.value = ''; // Reset
+            }
+        }
+
+        // === NAVIGATION LOGIC ===
+        function showPage(pageId, navElement) {
+            // Hide all pages
+            document.querySelectorAll('.page-section').forEach(el => el.classList.add('d-none'));
+            // Show target page
+            document.getElementById('page-' + pageId).classList.remove('d-none');
+
+            // Update Nav State
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if (navElement) navElement.classList.add('active');
+        }
+
+        // === STATUS TOAST ===
+        function showStatus(msg, type) { // Generic override
+            const el = document.getElementById('status');
+            el.textContent = msg;
+            el.classList.remove('d-none');
+            el.style.borderLeft = type === 'success' ? '4px solid var(--success)' : '4px solid var(--danger)';
+            setTimeout(() => el.classList.add('d-none'), 4000);
+        }
+
+        function showStatusLink(msg, type) {
+            const el = document.getElementById('statusLink');
+            el.textContent = msg;
+            el.classList.remove('d-none');
+            setTimeout(() => el.classList.add('d-none'), 4000);
+        }
+
+        // === ORIGINAL JS LOGIC (Minimally adapted) ===
+        function addEmoji(emoji) {
+            const textarea = document.getElementById('message');
+            textarea.value += emoji;
+            textarea.focus();
+        }
+
+
+        // === IMAGE HANDLING ===
+        let selectedImage = null;
+
+        function handleImageSelect(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                selectedImage = file;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreviewContainer').classList.remove('d-none');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeImage() {
+            selectedImage = null;
+            document.getElementById('imageInput').value = '';
+            document.getElementById('imagePreviewContainer').classList.add('d-none');
+        }
+
+        async function sendMessage() {
+            const text = document.getElementById('message').value;
+            if (!text.trim() && !selectedImage) {
+                showStatus('Digite um texto ou anexe uma imagem.', 'warning');
+                return;
+            }
+            const btn = document.getElementById('btnSend');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = 'Enviando...';
+
+            try {
+                const formData = new FormData();
+                formData.append('text', text);
+                if (selectedImage) {
+                    formData.append('image', selectedImage);
+                }
+
+                const response = await fetch('/send-manual', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    showStatus('Mensagem enviada com sucesso! ✅', 'success');
+                    document.getElementById('message').value = '';
+                    removeImage(); // Limpa imagem após envio
+                } else {
+                    const data = await response.json().catch(() => ({}));
+                    showStatus('Erro ao enviar: ' + (data.detail || 'Erro desconhecido'), 'danger');
+                }
+            } catch (error) {
+                showStatus('Erro de conexão.', 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        async function sendLink() {
+            const url = document.getElementById('amazonUrl').value;
+            if (!url) return;
+            const btn = document.getElementById('btnLink');
+            btn.disabled = true;
+            btn.innerHTML = 'Processando...';
+            showStatusLink('Coletando dados...', 'info');
+
+            try {
+                const response = await fetch('/process-link', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: url })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showStatusLink(`✅ Sucesso! Verifique seu Telegram.`, 'success');
+                    document.getElementById('amazonUrl').value = '';
+                } else {
+                    showStatusLink('Erro: ' + data.detail, 'danger');
+                }
+            } catch (e) {
+                showStatusLink('Erro de conexão', 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Processar Link 🚀';
+            }
+        }
+
+        async function loadHistory() {
+            const container = document.getElementById('historyList');
+            container.innerHTML = '<p class="text-secondary">Carregando...</p>';
+            try {
+                const response = await fetch('/history?limit=30');
+                const data = await response.json();
+                if (data.messages.length === 0) {
+                    container.innerHTML = '<p class="text-secondary">Nenhum envio recente.</p>';
+                    return;
+                }
+                container.innerHTML = data.messages.map(m => `
+                    <div class="list-item">
+                        <div>
+                            <div class="mb-1">
+                                <span class="${m.status === 'success' ? 'text-success' : 'text-danger'} me-2">
+                                    ${m.status === 'success' ? '●' : '●'}
+                                </span>
+                                <span class="text-white">${escapeHtml(m.text.substring(0, 60))}...</span>
+                            </div>
+                            <small class="text-secondary">${formatDate(m.sent_at)}</small>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = '<p class="text-danger">Erro ao carregar.</p>';
+            }
+        }
+
+        let clicksChart = null;
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/stats');
+                const data = await response.json();
+
+                // Card Stats
+                document.getElementById('statTotal').textContent = data.total;
+                document.getElementById('statSuccess').textContent = data.success;
+                document.getElementById('statFailed').textContent = data.failed;
+                document.getElementById('statToday').textContent = data.today_clicks || 0;
+
+                // Render Chart
+                renderClicksChart(data.clicks_24h || []);
+
+                // Render Top Links
+                renderTopLinks(data.top_links || []);
+
+            } catch (error) { console.error(error); }
+        }
+
+        function renderClicksChart(history) {
+            const ctx = document.getElementById('clicksChart').getContext('2d');
+            const labels = history.map(h => h[0].split(' ')[1]); // Pega apenas a hora
+            const values = history.map(h => h[1]);
+
+            if (clicksChart) clicksChart.destroy();
+
+            clicksChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Cliques',
+                        data: values,
+                        borderColor: '#ffffff',
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#333' } },
+                        x: { grid: { color: '#333' } }
+                    }
+                }
+            });
+        }
+
+        function renderTopLinks(links) {
+            const container = document.getElementById('topLinksList');
+            if (links.length === 0) {
+                container.innerHTML = '<p class="text-secondary">Nenhum clique registrado ainda.</p>';
+                return;
+            }
+            container.innerHTML = links.map(l => `
+                <div class="list-item d-flex justify-content-between align-items-center">
+                    <div class="text-truncate me-3" style="max-width: 70%">
+                        <div class="text-white">${escapeHtml(l[0] || 'Link Sem Título')}</div>
+                        <small class="text-secondary">/r/${l[1]}</small>
+                    </div>
+                    <div class="fw-bold text-accent">${l[2]} clicks</div>
+                </div>
+            `).join('');
+        }
+
+        async function loadQueue() {
+            const container = document.getElementById('queueList');
+            container.innerHTML = '<p class="text-secondary">Atualizando...</p>';
+            try {
+                const response = await fetch('/queue/list');
+                const data = await response.json();
+                if (data.queue_size === 0) {
+                    container.innerHTML = '<div class="card text-center text-secondary py-5">✅ Fila limpa!</div>';
+                    return;
+                }
+                container.innerHTML = data.items.map(item => `
+                    <div class="list-item">
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-secondary me-3" style="font-size:12px; padding:4px 8px; border-radius:4px;">#${item.position}</span>
+                            <div>
+                                <div class="text-white mb-1">${escapeHtml(item.preview)}</div>
+                                <small class="text-secondary">${item.type === 'photo' ? '🖼️ Com Imagem' : '📝 Texto'}</small>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) { container.innerHTML = 'Erro.'; }
+        }
+
+        async function sendNow() {
+            if (!confirm('Enviar próximo item agora?')) return;
+            try {
+                const response = await fetch('/queue/send-now', { method: 'POST' });
+                if (response.ok) {
+                    showStatus('Enviado com sucesso!', 'success');
+                    loadQueue();
+                } else {
+                    showStatus('Erro ao enviar.', 'danger');
+                }
+            } catch (e) { showStatus('Erro.', 'danger'); }
+        }
+
+        async function sendWelcome() {
+            const text = document.getElementById('welcomeMessage').value;
+            try {
+                const response = await fetch('/send-welcome', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                });
+                if (response.ok) alert('Mensagem enviada e fixada!');
+                else alert('Erro ao fixar.');
+            } catch (e) { alert('Erro de conexão'); }
+        }
+
+        async function loadSettings() {
+            try {
+                const response = await fetch('/settings');
+                const data = await response.json();
+                document.getElementById('cfg_telegram_bot_token').placeholder = "••••••••••••";
+                document.getElementById('cfg_telegram_channel_id').value = data.telegram_channel_id || "";
+                document.getElementById('cfg_telegram_admin_id').value = data.telegram_admin_id || "";
+                document.getElementById('cfg_amazon_partner_tag').value = data.amazon_partner_tag || "";
+            } catch (e) { }
+        }
+
+        async function saveSettings() {
+            if (!confirm("Reiniciar sistema?")) return;
+            const payload = {};
+            const token = document.getElementById('cfg_telegram_bot_token').value;
+            if (token) payload.telegram_bot_token = token;
+            payload.telegram_channel_id = document.getElementById('cfg_telegram_channel_id').value;
+            payload.telegram_admin_id = document.getElementById('cfg_telegram_admin_id').value;
+            payload.amazon_partner_tag = document.getElementById('cfg_amazon_partner_tag').value;
+
+            try {
+                await fetch('/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                alert('Salvo! Reiniciando...');
+                setTimeout(() => location.reload(), 10000);
+            } catch (e) { alert('Erro ao salvar'); }
+        }
+
+        function formatDate(iso) { return new Date(iso).toLocaleString('pt-BR'); }
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+    </script>
+</body>
+
+</html>
