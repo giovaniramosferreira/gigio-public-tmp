@@ -1,0 +1,7 @@
+expression PastaDados = "C:\colmeia\sprint-01\dados" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+
+	lineageTag: 341c8041-f09b-5c69-ba46-3faaf40508ba
+
+	annotation PBI_ResultType = Text
+
+	annotation PBI_NavigationStepName = Navegação

@@ -1,0 +1,116 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.0.0/schema.json",
+  "name": "3018c6b6aeb35d84b6ad",
+  "position": {
+    "x": 20,
+    "y": 420,
+    "z": 4,
+    "width": 1240,
+    "height": 280,
+    "tabOrder": 400
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_produto"
+                    }
+                  },
+                  "Property": "CodigoProduto"
+                }
+              },
+              "queryRef": "dim_produto.CodigoProduto",
+              "nativeQueryRef": "CodigoProduto"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_produto"
+                    }
+                  },
+                  "Property": "Descricao"
+                }
+              },
+              "queryRef": "dim_produto.Descricao",
+              "nativeQueryRef": "Descricao"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fato_vendas"
+                    }
+                  },
+                  "Property": "Faturamento Liquido"
+                }
+              },
+              "queryRef": "fato_vendas.Faturamento Liquido",
+              "nativeQueryRef": "Faturamento Liquido"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fato_vendas"
+                    }
+                  },
+                  "Property": "Itens Vendidos"
+                }
+              },
+              "queryRef": "fato_vendas.Itens Vendidos",
+              "nativeQueryRef": "Itens Vendidos"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fato_vendas"
+                    }
+                  },
+                  "Property": "Taxa de Devolucao"
+                }
+              },
+              "queryRef": "fato_vendas.Taxa de Devolucao",
+              "nativeQueryRef": "Taxa de Devolucao"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Detalhe por produto'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

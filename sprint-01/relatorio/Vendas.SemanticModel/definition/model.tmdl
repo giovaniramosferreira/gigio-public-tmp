@@ -1,0 +1,18 @@
+model Model
+
+	culture: pt-BR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: pt-BR
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["PastaDados","dim_calendario","dim_produto","dim_cliente","fato_vendas"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table dim_calendario
+ref table dim_produto
+ref table dim_cliente
+ref table fato_vendas

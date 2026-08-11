@@ -1,0 +1,115 @@
+table fato_vendas
+
+	lineageTag: ba257848-8b25-5057-a29e-378c6bb404b2
+
+	/// Vendas menos devolucoes. Definicao certificada — nao duplicar.
+	measure 'Faturamento Liquido' = SUM(fato_vendas[ValorLiquido])
+		formatString: "#,0"
+		lineageTag: c8828bbb-b244-5b90-b7b2-bf5e7e20a7b3
+
+	/// Somente vendas. Ignora notas de credito.
+	measure 'Faturamento Bruto' = CALCULATE(SUM(fato_vendas[ValorLiquido]), fato_vendas[EhDevolucao] = 0)
+		formatString: "#,0"
+		lineageTag: 69b942cb-cd00-56df-985b-df5c14d316d7
+
+	/// Valor absoluto das devolucoes.
+	measure 'Valor Devolvido' = ABS(CALCULATE(SUM(fato_vendas[ValorLiquido]), fato_vendas[EhDevolucao] = 1))
+		formatString: "#,0"
+		lineageTag: 2251341d-53dc-5aba-8f27-077599d6425a
+
+	/// Devolucoes sobre faturamento bruto. DIVIDE evita divisao por zero.
+	measure 'Taxa de Devolucao' = DIVIDE([Valor Devolvido], [Faturamento Bruto])
+		formatString: "0.0%"
+		lineageTag: 5737aebb-1580-5421-a68c-6f070c538726
+
+	/// Contagem distinta de notas.
+	measure 'Pedidos' = DISTINCTCOUNT(fato_vendas[Pedido])
+		formatString: "#,0"
+		lineageTag: 979787ac-52c4-507a-818c-82aaa6f399bb
+
+	/// Faturamento liquido por pedido.
+	measure 'Ticket Medio' = DIVIDE([Faturamento Liquido], [Pedidos])
+		formatString: "#,0.00"
+		lineageTag: 1cda6232-0151-559d-98c1-c8fd98abca6a
+
+	/// Quantidade, excluindo devolucoes.
+	measure 'Itens Vendidos' = CALCULATE(SUM(fato_vendas[Quantidade]), fato_vendas[EhDevolucao] = 0)
+		formatString: "#,0"
+		lineageTag: ca8d9e44-51f6-5a62-9356-3e73b4a241a6
+
+	/// Requer a tabela de calendario marcada como tabela de datas.
+	measure 'Faturamento Mes Anterior' = CALCULATE([Faturamento Liquido], DATEADD(dim_calendario[Data], -1, MONTH))
+		formatString: "#,0"
+		lineageTag: 5a95143a-e82f-54b8-a5fe-f285174e79b6
+
+	/// VAR calcula a medida uma vez so, em vez de duas.
+	measure 'Variacao Mensal %' = VAR Anterior = [Faturamento Mes Anterior] RETURN DIVIDE([Faturamento Liquido] - Anterior, Anterior)
+		formatString: "0.0%"
+		lineageTag: d8decee6-87ce-5f31-8f6d-e937d6a3e7b0
+
+	column Pedido
+		dataType: string
+		lineageTag: d002329f-205a-59d7-9e2f-230b8d775a64
+		summarizeBy: none
+		sourceColumn: Pedido
+
+	column CodigoProduto
+		dataType: string
+		lineageTag: 5a7ec07c-abab-5463-9a42-141c41a8aaed
+		summarizeBy: none
+		sourceColumn: CodigoProduto
+
+	column ChaveCliente
+		dataType: int64
+		formatString: "0"
+		lineageTag: 5c8bd5bb-8b2e-5f9f-aec0-3e54de533e7f
+		summarizeBy: none
+		sourceColumn: ChaveCliente
+
+	column Data
+		dataType: dateTime
+		formatString: "Short Date"
+		lineageTag: 2d717e61-aed1-52b5-927a-0623e05590ce
+		summarizeBy: none
+		sourceColumn: Data
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Quantidade
+		dataType: int64
+		formatString: "#,0"
+		lineageTag: f85ee247-b8f0-59c4-8d79-0089e5531a78
+		summarizeBy: none
+		sourceColumn: Quantidade
+
+	column PrecoUnitario
+		dataType: double
+		formatString: "#,0.00"
+		lineageTag: c2a4615b-1cd9-5b5b-967d-79b18d582cf7
+		summarizeBy: none
+		sourceColumn: PrecoUnitario
+
+	column ValorLiquido
+		dataType: double
+		formatString: "#,0.00"
+		lineageTag: 08c7d192-c29e-5a80-98a9-e4daf351d88e
+		summarizeBy: none
+		sourceColumn: ValorLiquido
+
+	column EhDevolucao
+		dataType: int64
+		formatString: "0"
+		lineageTag: 29d99845-4b10-529d-ade4-3cf72cfcdf86
+		summarizeBy: none
+		sourceColumn: EhDevolucao
+
+	partition fato_vendas = m
+		mode: import
+		source =
+			let
+				Fonte = Csv.Document(File.Contents(PastaDados & "\fato_vendas.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				Cabecalho = Table.PromoteHeaders(Fonte, [PromoteAllScalars = true]),
+				Tipos = Table.TransformColumnTypes(Cabecalho, {{"Pedido", type text}, {"CodigoProduto", type text}, {"ChaveCliente", Int64.Type}, {"Data", type date}, {"Quantidade", Int64.Type}, {"PrecoUnitario", type number}, {"ValorLiquido", type number}, {"EhDevolucao", Int64.Type}})
+			in
+				Tipos
+
+	annotation PBI_ResultType = Table
